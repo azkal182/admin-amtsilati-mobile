@@ -37,6 +37,7 @@ import {
 } from '@/components/ui/table'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
+import { PageHeader } from '@/components/layout/page-header'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search as GlobalSearch } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
@@ -168,18 +169,17 @@ export function AdminUsersPage() {
         <ProfileDropdown />
       </Header>
       <Main>
-        <div className='mb-6 flex flex-wrap items-start justify-between gap-4'>
-          <div>
-            <h1 className='text-2xl font-bold tracking-tight'>Admin Users</h1>
-            <p className='text-muted-foreground'>
-              Kelola pengguna administrator Amtsilati.
-            </p>
-          </div>
-          <Button onClick={() => setEditor('new')}>
-            <Plus />
-            Tambah admin
-          </Button>
-        </div>
+        <PageHeader
+          eyebrow='Akses internal'
+          title='Admin Users'
+          description='Kelola pengguna administrator dan hak akses Amtsilati.'
+          actions={
+            <Button onClick={() => setEditor('new')}>
+              <Plus />
+              Tambah admin
+            </Button>
+          }
+        />
         <Card className='min-w-0'>
           <CardHeader>
             <CardTitle className='flex items-center justify-between gap-3'>

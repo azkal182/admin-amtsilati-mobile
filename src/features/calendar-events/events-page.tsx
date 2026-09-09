@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/table'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
+import { PageHeader } from '@/components/layout/page-header'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search as GlobalSearch } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
@@ -53,31 +54,28 @@ export function CalendarEventsPage() {
         <ProfileDropdown />
       </Header>
       <Main>
-        <div className='mb-6 flex flex-wrap items-start justify-between gap-4'>
-          <div>
-            <h1 className='text-2xl font-bold tracking-tight'>
-              Calendar Events
-            </h1>
-            <p className='text-muted-foreground'>
-              Kelola agenda dan event Amtsilati.
-            </p>
-          </div>
-          <Button asChild>
-            <Link
-              to='/events/new'
-              search={{
-                page: 1,
-                limit: 20,
-                scope: 'all',
-                category: 'all',
-                status: 'all',
-              }}
-            >
-              <CalendarPlus />
-              Tambah event
-            </Link>
-          </Button>
-        </div>
+        <PageHeader
+          eyebrow='Agenda operasional'
+          title='Calendar Events'
+          description='Kelola agenda dan event Amtsilati pada satu workspace.'
+          actions={
+            <Button asChild>
+              <Link
+                to='/events/new'
+                search={{
+                  page: 1,
+                  limit: 20,
+                  scope: 'all',
+                  category: 'all',
+                  status: 'all',
+                }}
+              >
+                <CalendarPlus />
+                Tambah event
+              </Link>
+            </Button>
+          }
+        />
         <Card>
           <CardHeader>
             <CardTitle className='flex items-center justify-between'>

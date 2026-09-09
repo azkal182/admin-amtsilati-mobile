@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/table'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
+import { PageHeader } from '@/components/layout/page-header'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search as GlobalSearch } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
@@ -53,22 +54,19 @@ export function StoreProductsPage() {
         <ProfileDropdown />
       </Header>
       <Main>
-        <div className='mb-6 flex flex-wrap items-start justify-between gap-4'>
-          <div>
-            <h1 className='text-2xl font-bold tracking-tight'>
-              Store Products
-            </h1>
-            <p className='text-muted-foreground'>
-              Kelola katalog produk Amtsilati.
-            </p>
-          </div>
-          <Button asChild>
-            <Link to='/store/products/new'>
-              <Plus />
-              Tambah produk
-            </Link>
-          </Button>
-        </div>
+        <PageHeader
+          eyebrow='Katalog digital'
+          title='Store Products'
+          description='Kelola katalog produk dan ketersediaan item Amtsilati.'
+          actions={
+            <Button asChild>
+              <Link to='/store/products/new'>
+                <Plus />
+                Tambah produk
+              </Link>
+            </Button>
+          }
+        />
         <Card>
           <CardHeader>
             <CardTitle className='flex items-center justify-between'>

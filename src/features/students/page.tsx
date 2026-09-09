@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/table'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
+import { PageHeader } from '@/components/layout/page-header'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search as GlobalSearch } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
@@ -55,12 +56,11 @@ export function StudentsPage() {
         <ProfileDropdown />
       </Header>
       <Main>
-        <div className='mb-6'>
-          <h1 className='text-2xl font-bold tracking-tight'>Students</h1>
-          <p className='text-muted-foreground'>
-            Snapshot data santri untuk kebutuhan operasional, read-only.
-          </p>
-        </div>
+        <PageHeader
+          eyebrow='Data santri'
+          title='Students'
+          description='Snapshot data santri untuk kebutuhan operasional, read-only.'
+        />
         <Card>
           <CardHeader>
             <CardTitle className='flex items-center justify-between gap-3'>
