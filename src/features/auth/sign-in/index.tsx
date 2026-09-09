@@ -1,3 +1,4 @@
+import { Badge } from '@/components/ui/badge'
 import {
   Card,
   CardContent,
@@ -12,19 +13,25 @@ import { UserAuthForm } from './components/user-auth-form'
 export function SignIn() {
   return (
     <AuthLayout>
-      <Card className='max-w-sm gap-4'>
-        <CardHeader>
-          <CardTitle className='text-lg tracking-tight'>Masuk Admin</CardTitle>
+      <Card className='gap-0 border-border/70 bg-card/95 shadow-xl shadow-primary/5 backdrop-blur-sm'>
+        <CardHeader className='gap-3 pb-6'>
+          <Badge variant='secondary' className='w-fit'>
+            Akses administrator
+          </Badge>
+          <CardTitle className='text-2xl tracking-tight'>
+            Masuk ke Amtsilati
+          </CardTitle>
           <CardDescription>
-            Masukkan username dan password admin Anda untuk melanjutkan.
+            Gunakan akun admin Anda untuk melanjutkan ke panel operasional.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className='pb-6'>
           <UserAuthForm />
         </CardContent>
-        <CardFooter>
-          <p className='px-8 text-center text-sm text-muted-foreground'>
-            Akses ini hanya untuk administrator Amtsilati.
+        <CardFooter className='border-t bg-muted/20 px-6 py-4'>
+          <p className='text-center text-xs leading-5 text-muted-foreground'>
+            Halaman ini khusus untuk administrator Amtsilati. Jangan bagikan
+            kredensial Anda.
           </p>
         </CardFooter>
       </Card>

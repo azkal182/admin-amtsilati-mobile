@@ -53,7 +53,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className={cn('grid gap-3', className)}
+        className={cn('grid gap-5', className)}
         {...props}
       >
         <FormField
@@ -95,7 +95,10 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             {form.formState.errors.root.message}
           </p>
         )}
-        <Button className='mt-2' disabled={form.formState.isSubmitting}>
+        <Button
+          className='mt-1 h-11 w-full'
+          disabled={form.formState.isSubmitting}
+        >
           <LogIn />
           {form.formState.isSubmitting ? 'Memproses...' : 'Masuk'}
         </Button>
