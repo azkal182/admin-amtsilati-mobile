@@ -24,7 +24,7 @@ Dokumentasi ini adalah rencana kerja utama untuk membangun panel admin Amtsilati
 
 ## Status fase
 
-- [ ] Fase 0 — Audit dan cleanup template
+- [x] Fase 0 — Audit dan cleanup template
 - [ ] Fase 1 — Foundation, API client, dan application shell
 - [ ] Fase 2 — Admin authentication dan session lifecycle
 - [ ] Fase 3 — Admin Users dan Students

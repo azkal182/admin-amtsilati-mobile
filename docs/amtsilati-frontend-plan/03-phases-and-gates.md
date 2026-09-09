@@ -12,16 +12,16 @@
 
 ### Checklist
 
-- [ ] Tidak ada import Clerk.
-- [ ] Tidak ada `mock-access-token`, `sleep`, faker, atau mock business data pada production path.
-- [ ] Sidebar hanya berisi menu Amtsilati.
-- [ ] Branding template hilang dari UI dan README aplikasi.
-- [ ] Dependency demo yang tidak terpakai dihapus.
-- [ ] `lint` dan `build` masih berhasil.
+- [x] Tidak ada import Clerk.
+- [x] Tidak ada `mock-access-token`, `sleep`, faker, atau mock business data pada production path.
+- [x] Sidebar hanya berisi menu Amtsilati.
+- [x] Branding template hilang dari UI dan README aplikasi.
+- [x] Dependency demo yang tidak terpakai dihapus.
+- [x] `lint` dan `build` masih berhasil.
 
 ### Gate 0
 
-Lulus jika project hanya menyisakan fondasi UI dan route skeleton Amtsilati, tanpa demo template yang dapat diakses user.
+Lulus jika project hanya menyisakan fondasi UI dan route skeleton Amtsilati, tanpa demo template yang dapat diakses user. Gate ini lulus pada 2026-09-09 berdasarkan verifikasi lint, format check, dan build menggunakan Bun 1.4.0. Targeted browser test sudah dicoba menggunakan Bun, tetapi belum dapat dijalankan karena executable Chromium Playwright tidak tersedia dan Vitest tidak mendapatkan port browser pada environment; test diulang pada fase quality/release setelah runtime browser tersedia.
 
 ## Fase 1 — Foundation, API client, dan shell
 

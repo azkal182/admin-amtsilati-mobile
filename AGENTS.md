@@ -18,7 +18,7 @@ The development API origin is `http://localhost:4054` and the API prefix is `/ap
 - Preserve unrelated user changes. Do not reset or delete files without explicit scope.
 - Keep route files thin and keep domain behavior inside the owning feature.
 - Every page must handle the relevant loading, empty, success, validation, forbidden, not-found, conflict, and server-error states.
-- Run proportional verification after changes. At minimum use `pnpm run lint` and `pnpm run build` for source changes; run targeted tests when behavior changes.
+- Use Bun, matching `bun.lock` and the `packageManager` field, for project commands. Run proportional verification after changes. At minimum use `bun run lint` and `bun run build` for source changes; run targeted tests when behavior changes.
 
 ## Skill routing
 
