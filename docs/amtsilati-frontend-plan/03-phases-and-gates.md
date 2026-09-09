@@ -131,17 +131,17 @@ Lulus jika sync, tariff, snapshot, dan pengurus dapat dijalankan tanpa memakai e
 
 ### Checklist
 
-- [ ] Signed params diminta dari endpoint admin.
-- [ ] `apiSecret` tidak pernah diterima/dikirim frontend.
-- [ ] Secure URL upload digunakan saat save product.
-- [ ] Retry 429 menggunakan backoff terbatas.
-- [ ] Submit disabled selama upload/mutation.
-- [ ] Query product di-refresh setelah create/update.
-- [ ] Error upload dan error product dibedakan.
+- [x] Signed params diminta dari endpoint admin.
+- [x] `apiSecret` tidak pernah diterima/dikirim frontend.
+- [x] Secure URL upload digunakan saat save product.
+- [x] Retry 429 menggunakan backoff terbatas.
+- [x] Submit disabled selama upload/mutation.
+- [x] Query product di-refresh setelah create/update.
+- [x] Error upload dan error product dibedakan.
 
 ### Gate 5
 
-Lulus jika product lifecycle dan signed upload tervalidasi di development tanpa secret bocor ke bundle atau log.
+Implementasi Fase 5 selesai pada 2026-09-09: product list/filter/search/pagination/detail/create/edit, validasi form, signed Cloudinary upload, retry 429 terbatas, permission/error states, dan query invalidation tersedia. Unit suite (28 test), lint, format check, TypeScript, dan production build berhasil. Smoke backend ke `http://127.0.0.1:4054` menghasilkan `200` untuk product list dan signed upload; respons sensitif tidak dicetak. Gate 5 masih memerlukan verifikasi upload Cloudinary dan mutation create/edit dengan data uji yang disepakati agar tidak mengubah katalog operasional tanpa prosedur cleanup.
 
 ## Fase 6 — Calendar Events
 

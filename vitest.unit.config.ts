@@ -13,6 +13,7 @@ export default defineConfig({
       'src/features/admin-users/**/*.test.ts',
       'src/features/students/**/*.test.ts',
       'src/features/syahriyah/**/*.test.ts',
+      'src/features/store/**/*.test.ts',
     ],
   },
 })

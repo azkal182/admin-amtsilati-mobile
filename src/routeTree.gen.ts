@@ -28,6 +28,8 @@ import { Route as AuthenticatedStudentsIdSantriRouteImport } from './routes/_aut
 import { Route as AuthenticatedSettingsAppearanceRouteImport } from './routes/_authenticated/settings/appearance'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
 import { Route as AuthenticatedStoreProductsIndexRouteImport } from './routes/_authenticated/store/products/index'
+import { Route as AuthenticatedStoreProductsNewRouteImport } from './routes/_authenticated/store/products/new'
+import { Route as AuthenticatedStoreProductsIdRouteImport } from './routes/_authenticated/store/products/$id'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -129,6 +131,18 @@ const AuthenticatedStoreProductsIndexRoute =
     path: '/store/products/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedStoreProductsNewRoute =
+  AuthenticatedStoreProductsNewRouteImport.update({
+    id: '/store/products/new',
+    path: '/store/products/new',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedStoreProductsIdRoute =
+  AuthenticatedStoreProductsIdRouteImport.update({
+    id: '/store/products/$id',
+    path: '/store/products/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
@@ -148,6 +162,8 @@ export interface FileRoutesByFullPath {
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/students/$idSantri': typeof AuthenticatedStudentsIdSantriRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
+  '/store/products/$id': typeof AuthenticatedStoreProductsIdRoute
+  '/store/products/new': typeof AuthenticatedStoreProductsNewRoute
   '/store/products/': typeof AuthenticatedStoreProductsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -167,6 +183,8 @@ export interface FileRoutesByTo {
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/students/$idSantri': typeof AuthenticatedStudentsIdSantriRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
+  '/store/products/$id': typeof AuthenticatedStoreProductsIdRoute
+  '/store/products/new': typeof AuthenticatedStoreProductsNewRoute
   '/store/products': typeof AuthenticatedStoreProductsIndexRoute
 }
 export interface FileRoutesById {
@@ -189,6 +207,8 @@ export interface FileRoutesById {
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/_authenticated/students/$idSantri': typeof AuthenticatedStudentsIdSantriRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
+  '/_authenticated/store/products/$id': typeof AuthenticatedStoreProductsIdRoute
+  '/_authenticated/store/products/new': typeof AuthenticatedStoreProductsNewRoute
   '/_authenticated/store/products/': typeof AuthenticatedStoreProductsIndexRoute
 }
 export interface FileRouteTypes {
@@ -211,6 +231,8 @@ export interface FileRouteTypes {
     | '/settings/appearance'
     | '/students/$idSantri'
     | '/settings/'
+    | '/store/products/$id'
+    | '/store/products/new'
     | '/store/products/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -230,6 +252,8 @@ export interface FileRouteTypes {
     | '/settings/appearance'
     | '/students/$idSantri'
     | '/settings'
+    | '/store/products/$id'
+    | '/store/products/new'
     | '/store/products'
   id:
     | '__root__'
@@ -251,6 +275,8 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/appearance'
     | '/_authenticated/students/$idSantri'
     | '/_authenticated/settings/'
+    | '/_authenticated/store/products/$id'
+    | '/_authenticated/store/products/new'
     | '/_authenticated/store/products/'
   fileRoutesById: FileRoutesById
 }
@@ -400,6 +426,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedStoreProductsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/store/products/new': {
+      id: '/_authenticated/store/products/new'
+      path: '/store/products/new'
+      fullPath: '/store/products/new'
+      preLoaderRoute: typeof AuthenticatedStoreProductsNewRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/store/products/$id': {
+      id: '/_authenticated/store/products/$id'
+      path: '/store/products/$id'
+      fullPath: '/store/products/$id'
+      preLoaderRoute: typeof AuthenticatedStoreProductsIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -440,6 +480,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSyahriyahRoute: typeof AuthenticatedSyahriyahRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedErrorsErrorRoute: typeof AuthenticatedErrorsErrorRoute
+  AuthenticatedStoreProductsIdRoute: typeof AuthenticatedStoreProductsIdRoute
+  AuthenticatedStoreProductsNewRoute: typeof AuthenticatedStoreProductsNewRoute
   AuthenticatedStoreProductsIndexRoute: typeof AuthenticatedStoreProductsIndexRoute
 }
 
@@ -451,6 +493,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSyahriyahRoute: AuthenticatedSyahriyahRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedErrorsErrorRoute: AuthenticatedErrorsErrorRoute,
+  AuthenticatedStoreProductsIdRoute: AuthenticatedStoreProductsIdRoute,
+  AuthenticatedStoreProductsNewRoute: AuthenticatedStoreProductsNewRoute,
   AuthenticatedStoreProductsIndexRoute: AuthenticatedStoreProductsIndexRoute,
 }
 

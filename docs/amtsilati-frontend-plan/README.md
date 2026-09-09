@@ -29,7 +29,7 @@ Dokumentasi ini adalah rencana kerja utama untuk membangun panel admin Amtsilati
 - [x] Fase 2 — Admin authentication dan session lifecycle
 - [ ] Fase 3 — Admin Users dan Students (implementasi selesai; Gate 3 pending)
 - [ ] Fase 4 — Syahriyah Operations (implementasi selesai; Gate 4 pending)
-- [ ] Fase 5 — Store Management
+- [ ] Fase 5 — Store Management (implementasi selesai; Gate 5 pending mutation/upload)
 - [ ] Fase 6 — Calendar Events
 - [ ] Fase 7 — Hardening, testing, dan release readiness
 
