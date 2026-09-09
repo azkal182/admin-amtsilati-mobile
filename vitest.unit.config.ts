@@ -14,6 +14,7 @@ export default defineConfig({
       'src/features/students/**/*.test.ts',
       'src/features/syahriyah/**/*.test.ts',
       'src/features/store/**/*.test.ts',
+      'src/features/calendar-events/**/*.test.ts',
     ],
   },
 })

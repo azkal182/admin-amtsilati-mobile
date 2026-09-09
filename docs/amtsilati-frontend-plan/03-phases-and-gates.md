@@ -154,17 +154,17 @@ Implementasi Fase 5 selesai pada 2026-09-09: product list/filter/search/paginati
 
 ### Checklist
 
-- [ ] Event ID diperlakukan sebagai UUID.
-- [ ] PATCH hanya mengirim field yang berubah atau memang dimaksudkan.
-- [ ] Archive menggunakan DELETE sesuai contract.
-- [ ] Publish/unpublish dibatasi permission publish.
-- [ ] ONCE tidak menerima range.
-- [ ] Fallback lokal tersedia untuk icon/color semantic token.
-- [ ] Detail 404 memiliki state khusus.
+- [x] Event ID diperlakukan sebagai UUID.
+- [x] PATCH hanya mengirim field yang berubah atau memang dimaksudkan.
+- [x] Archive menggunakan DELETE sesuai contract.
+- [x] Publish/unpublish dibatasi permission publish.
+- [x] ONCE tidak menerima range.
+- [x] Fallback lokal tersedia untuk icon/color semantic token.
+- [x] Detail 404 memiliki state khusus.
 
 ### Gate 6
 
-Lulus jika event draft/published/archived dapat dikelola sesuai permission dan aturan date rule OpenAPI.
+Implementasi Fase 6 selesai pada 2026-09-09: list dengan filter scope/category/status dan pagination URL, detail/create/edit partial, archive via DELETE, validasi date rule Gregorian/Hijri, status draft/published/archived, permission `events.manage` dan `events.publish`, serta fallback label kategori tersedia. Unit suite (31 test), lint, format check, TypeScript, dan production build berhasil. Smoke backend ke `http://127.0.0.1:4054` menghasilkan `200` untuk list event. Gate 6 masih memerlukan verifikasi mutation create/edit/archive/publish menggunakan data uji development yang disepakati agar tidak mengubah kalender operasional tanpa prosedur cleanup.
 
 ## Fase 7 — Hardening, testing, dan release readiness
 

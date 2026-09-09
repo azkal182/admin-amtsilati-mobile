@@ -30,7 +30,7 @@ Dokumentasi ini adalah rencana kerja utama untuk membangun panel admin Amtsilati
 - [ ] Fase 3 — Admin Users dan Students (implementasi selesai; Gate 3 pending)
 - [ ] Fase 4 — Syahriyah Operations (implementasi selesai; Gate 4 pending)
 - [ ] Fase 5 — Store Management (implementasi selesai; Gate 5 pending mutation/upload)
-- [ ] Fase 6 — Calendar Events
+- [ ] Fase 6 — Calendar Events (implementasi selesai; Gate 6 pending mutation)
 - [ ] Fase 7 — Hardening, testing, dan release readiness
 
 Fase 2 sudah diimplementasikan, diuji dengan unit test, dan diverifikasi melalui browser pada `http://localhost:5173` menggunakan backend `http://localhost:4054`. Flow yang terverifikasi mencakup protected redirect, login sukses, pemulihan session setelah navigasi ulang, logout dan cleanup, kredensial invalid, 403, serta session expired. Chromium Playwright belum tersedia di environment, sehingga verifikasi browser menggunakan In-app Browser.

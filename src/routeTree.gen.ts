@@ -26,6 +26,8 @@ import { Route as AuthenticatedSettingsRouteRouteImport } from './routes/_authen
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
 import { Route as AuthenticatedStudentsIdSantriRouteImport } from './routes/_authenticated/students/$idSantri'
 import { Route as AuthenticatedSettingsAppearanceRouteImport } from './routes/_authenticated/settings/appearance'
+import { Route as AuthenticatedEventsNewRouteImport } from './routes/_authenticated/events/new'
+import { Route as AuthenticatedEventsIdRouteImport } from './routes/_authenticated/events/$id'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
 import { Route as AuthenticatedStoreProductsIndexRouteImport } from './routes/_authenticated/store/products/index'
 import { Route as AuthenticatedStoreProductsNewRouteImport } from './routes/_authenticated/store/products/new'
@@ -119,6 +121,16 @@ const AuthenticatedSettingsAppearanceRoute =
     path: '/appearance',
     getParentRoute: () => AuthenticatedSettingsRouteRoute,
   } as any)
+const AuthenticatedEventsNewRoute = AuthenticatedEventsNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AuthenticatedEventsRoute,
+} as any)
+const AuthenticatedEventsIdRoute = AuthenticatedEventsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AuthenticatedEventsRoute,
+} as any)
 const AuthenticatedErrorsErrorRoute =
   AuthenticatedErrorsErrorRouteImport.update({
     id: '/errors/$error',
@@ -155,10 +167,12 @@ export interface FileRoutesByFullPath {
   '/500': typeof errors500Route
   '/503': typeof errors503Route
   '/admin-users': typeof AuthenticatedAdminUsersRoute
-  '/events': typeof AuthenticatedEventsRoute
+  '/events': typeof AuthenticatedEventsRouteWithChildren
   '/students': typeof AuthenticatedStudentsRouteWithChildren
   '/syahriyah': typeof AuthenticatedSyahriyahRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
+  '/events/$id': typeof AuthenticatedEventsIdRoute
+  '/events/new': typeof AuthenticatedEventsNewRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/students/$idSantri': typeof AuthenticatedStudentsIdSantriRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
@@ -175,11 +189,13 @@ export interface FileRoutesByTo {
   '/500': typeof errors500Route
   '/503': typeof errors503Route
   '/admin-users': typeof AuthenticatedAdminUsersRoute
-  '/events': typeof AuthenticatedEventsRoute
+  '/events': typeof AuthenticatedEventsRouteWithChildren
   '/students': typeof AuthenticatedStudentsRouteWithChildren
   '/syahriyah': typeof AuthenticatedSyahriyahRoute
   '/': typeof AuthenticatedIndexRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
+  '/events/$id': typeof AuthenticatedEventsIdRoute
+  '/events/new': typeof AuthenticatedEventsNewRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/students/$idSantri': typeof AuthenticatedStudentsIdSantriRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
@@ -199,11 +215,13 @@ export interface FileRoutesById {
   '/(errors)/500': typeof errors500Route
   '/(errors)/503': typeof errors503Route
   '/_authenticated/admin-users': typeof AuthenticatedAdminUsersRoute
-  '/_authenticated/events': typeof AuthenticatedEventsRoute
+  '/_authenticated/events': typeof AuthenticatedEventsRouteWithChildren
   '/_authenticated/students': typeof AuthenticatedStudentsRouteWithChildren
   '/_authenticated/syahriyah': typeof AuthenticatedSyahriyahRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/errors/$error': typeof AuthenticatedErrorsErrorRoute
+  '/_authenticated/events/$id': typeof AuthenticatedEventsIdRoute
+  '/_authenticated/events/new': typeof AuthenticatedEventsNewRoute
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/_authenticated/students/$idSantri': typeof AuthenticatedStudentsIdSantriRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
@@ -228,6 +246,8 @@ export interface FileRouteTypes {
     | '/students'
     | '/syahriyah'
     | '/errors/$error'
+    | '/events/$id'
+    | '/events/new'
     | '/settings/appearance'
     | '/students/$idSantri'
     | '/settings/'
@@ -249,6 +269,8 @@ export interface FileRouteTypes {
     | '/syahriyah'
     | '/'
     | '/errors/$error'
+    | '/events/$id'
+    | '/events/new'
     | '/settings/appearance'
     | '/students/$idSantri'
     | '/settings'
@@ -272,6 +294,8 @@ export interface FileRouteTypes {
     | '/_authenticated/syahriyah'
     | '/_authenticated/'
     | '/_authenticated/errors/$error'
+    | '/_authenticated/events/$id'
+    | '/_authenticated/events/new'
     | '/_authenticated/settings/appearance'
     | '/_authenticated/students/$idSantri'
     | '/_authenticated/settings/'
@@ -412,6 +436,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsAppearanceRouteImport
       parentRoute: typeof AuthenticatedSettingsRouteRoute
     }
+    '/_authenticated/events/new': {
+      id: '/_authenticated/events/new'
+      path: '/new'
+      fullPath: '/events/new'
+      preLoaderRoute: typeof AuthenticatedEventsNewRouteImport
+      parentRoute: typeof AuthenticatedEventsRoute
+    }
+    '/_authenticated/events/$id': {
+      id: '/_authenticated/events/$id'
+      path: '/$id'
+      fullPath: '/events/$id'
+      preLoaderRoute: typeof AuthenticatedEventsIdRouteImport
+      parentRoute: typeof AuthenticatedEventsRoute
+    }
     '/_authenticated/errors/$error': {
       id: '/_authenticated/errors/$error'
       path: '/errors/$error'
@@ -459,6 +497,19 @@ const AuthenticatedSettingsRouteRouteWithChildren =
     AuthenticatedSettingsRouteRouteChildren,
   )
 
+interface AuthenticatedEventsRouteChildren {
+  AuthenticatedEventsIdRoute: typeof AuthenticatedEventsIdRoute
+  AuthenticatedEventsNewRoute: typeof AuthenticatedEventsNewRoute
+}
+
+const AuthenticatedEventsRouteChildren: AuthenticatedEventsRouteChildren = {
+  AuthenticatedEventsIdRoute: AuthenticatedEventsIdRoute,
+  AuthenticatedEventsNewRoute: AuthenticatedEventsNewRoute,
+}
+
+const AuthenticatedEventsRouteWithChildren =
+  AuthenticatedEventsRoute._addFileChildren(AuthenticatedEventsRouteChildren)
+
 interface AuthenticatedStudentsRouteChildren {
   AuthenticatedStudentsIdSantriRoute: typeof AuthenticatedStudentsIdSantriRoute
 }
@@ -475,7 +526,7 @@ const AuthenticatedStudentsRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsRouteRoute: typeof AuthenticatedSettingsRouteRouteWithChildren
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
-  AuthenticatedEventsRoute: typeof AuthenticatedEventsRoute
+  AuthenticatedEventsRoute: typeof AuthenticatedEventsRouteWithChildren
   AuthenticatedStudentsRoute: typeof AuthenticatedStudentsRouteWithChildren
   AuthenticatedSyahriyahRoute: typeof AuthenticatedSyahriyahRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
@@ -488,7 +539,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsRouteRoute: AuthenticatedSettingsRouteRouteWithChildren,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
-  AuthenticatedEventsRoute: AuthenticatedEventsRoute,
+  AuthenticatedEventsRoute: AuthenticatedEventsRouteWithChildren,
   AuthenticatedStudentsRoute: AuthenticatedStudentsRouteWithChildren,
   AuthenticatedSyahriyahRoute: AuthenticatedSyahriyahRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
