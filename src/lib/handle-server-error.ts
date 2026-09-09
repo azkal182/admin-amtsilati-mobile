@@ -5,16 +5,7 @@ import { ApiRequestError } from '@/api/types'
 export function handleServerError(error: unknown) {
   if (import.meta.env.DEV) {
     // eslint-disable-next-line no-console
-    console.log(
-      error instanceof ApiRequestError
-        ? {
-            name: error.name,
-            status: error.status,
-            code: error.code,
-            requestId: error.requestId,
-          }
-        : error
-    )
+    console.log(toSafeLogValue(error))
   }
 
   let errMsg = 'Something went wrong!'
@@ -40,4 +31,23 @@ export function handleServerError(error: unknown) {
   }
 
   toast.error(errMsg)
+}
+
+function toSafeLogValue(error: unknown) {
+  if (error instanceof ApiRequestError) {
+    return {
+      name: error.name,
+      status: error.status,
+      code: error.code,
+      requestId: error.requestId,
+    }
+  }
+
+  if (error instanceof AxiosError) {
+    return { name: error.name, message: error.message, status: error.status }
+  }
+
+  return error instanceof Error
+    ? { name: error.name, message: error.message }
+    : { name: 'UnknownError' }
 }

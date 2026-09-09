@@ -60,18 +60,18 @@ Lulus jika seluruh route skeleton dapat dirender, API layer teruji secara unit, 
 
 ### Checklist
 
-- [ ] Field login menggunakan username/password.
-- [ ] Login success mengisi user profile dan token.
-- [ ] Login 400/401 menampilkan feedback yang tepat.
-- [ ] Refresh tidak loop.
-- [ ] Refresh gagal menghapus session.
-- [ ] Logout tetap membersihkan session jika API gagal.
-- [ ] Tidak ada token/password di log.
-- [ ] Route admin tidak dapat diakses tanpa session.
+- [x] Field login menggunakan username/password.
+- [x] Login success mengisi user profile dan token.
+- [x] Login 400/401 menampilkan feedback yang tepat.
+- [x] Refresh tidak loop.
+- [x] Refresh gagal menghapus session.
+- [x] Logout tetap membersihkan session jika API gagal.
+- [x] Tidak ada token/password di log.
+- [x] Route admin tidak dapat diakses tanpa session.
 
 ### Gate 2
 
-Lulus jika login, protected route, refresh, logout, 401, 403, dan session expired dapat diverifikasi melalui test dan manual flow.
+Lulus jika login, protected route, refresh, logout, 401, 403, dan session expired dapat diverifikasi melalui test dan manual flow. Gate 2 lulus pada 2026-09-09: `bun run test:unit` (20 test pass), `bun run lint`, `bun run format:check`, dan `bun run build` berhasil. Smoke langsung ke backend `http://127.0.0.1:4054` berhasil untuk login admin (`200`), refresh (`200`), logout (`200`), dan kredensial invalid (`401`). Browser smoke pada `http://localhost:5173` juga berhasil: protected redirect, login sukses, navigasi ulang yang memulihkan session, logout dan cleanup, invalid credentials, serta halaman 403/session expired. Origin `localhost:5173` digunakan karena termasuk allowlist CORS backend; `localhost:4173` dan `127.0.0.1` tidak termasuk allowlist. Chromium Playwright belum tersedia di environment, tetapi flow telah diverifikasi melalui In-app Browser.
 
 ## Fase 3 — Admin Users dan Students
 

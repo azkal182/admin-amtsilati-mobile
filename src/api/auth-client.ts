@@ -57,6 +57,12 @@ export const adminAuthApi = {
       url: '/internal/admin/auth/token/refresh',
       data: { refreshToken },
     }),
-  logout: (): Promise<ApiEnvelope<null>> =>
-    send({ method: 'POST', url: '/internal/admin/auth/logout' }),
+  logout: (accessToken?: string): Promise<ApiEnvelope<null>> =>
+    send({
+      method: 'POST',
+      url: '/internal/admin/auth/logout',
+      headers: accessToken
+        ? { Authorization: `Bearer ${accessToken}` }
+        : undefined,
+    }),
 }

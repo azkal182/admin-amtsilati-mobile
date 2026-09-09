@@ -26,11 +26,13 @@ Dokumentasi ini adalah rencana kerja utama untuk membangun panel admin Amtsilati
 
 - [x] Fase 0 — Audit dan cleanup template
 - [x] Fase 1 — Foundation, API client, dan application shell
-- [ ] Fase 2 — Admin authentication dan session lifecycle
+- [x] Fase 2 — Admin authentication dan session lifecycle
 - [ ] Fase 3 — Admin Users dan Students
 - [ ] Fase 4 — Syahriyah Operations
 - [ ] Fase 5 — Store Management
 - [ ] Fase 6 — Calendar Events
 - [ ] Fase 7 — Hardening, testing, dan release readiness
+
+Fase 2 sudah diimplementasikan, diuji dengan unit test, dan diverifikasi melalui browser pada `http://localhost:5173` menggunakan backend `http://localhost:4054`. Flow yang terverifikasi mencakup protected redirect, login sukses, pemulihan session setelah navigasi ulang, logout dan cleanup, kredensial invalid, 403, serta session expired. Chromium Playwright belum tersedia di environment, sehingga verifikasi browser menggunakan In-app Browser.
 
 Fase berikutnya tidak dimulai sebelum gate fase sebelumnya berstatus lulus.

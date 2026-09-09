@@ -1,9 +1,16 @@
 import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios'
 import { useAuthStore } from '@/stores/auth-store'
+import { refreshAdminSession } from '@/features/auth/auth-session'
 import { getApiUrl } from './config'
 import { parseApiEnvelope } from './envelope'
 import { mapApiError } from './error-mapper'
 import { ApiRequestError, type ApiEnvelope } from './types'
+
+declare module 'axios' {
+  interface AxiosRequestConfig {
+    _amtsilatiAuthRetried?: boolean
+  }
+}
 
 export const adminClient = axios.create({
   baseURL: getApiUrl(),
@@ -18,7 +25,21 @@ adminClient.interceptors.request.use((config) => {
 
 adminClient.interceptors.response.use(
   (response) => response,
-  (error) => Promise.reject(mapApiError(error))
+  async (error) => {
+    const requestConfig = error.config as AxiosRequestConfig | undefined
+    if (
+      axios.isAxiosError(error) &&
+      error.response?.status === 401 &&
+      requestConfig &&
+      !requestConfig._amtsilatiAuthRetried
+    ) {
+      requestConfig._amtsilatiAuthRetried = true
+      if (await refreshAdminSession()) {
+        return adminClient.request(requestConfig)
+      }
+    }
+    return Promise.reject(mapApiError(error))
+  }
 )
 
 async function request<T>(config: AxiosRequestConfig): Promise<ApiEnvelope<T>> {

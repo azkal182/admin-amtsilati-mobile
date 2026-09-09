@@ -1,4 +1,3 @@
-import { clearCookies } from '@/test-utils/cookies'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 async function importAuthStore() {
@@ -7,15 +6,13 @@ async function importAuthStore() {
 }
 
 const sampleUser = {
-  accountNo: 'ACC-1',
-  email: 'user@example.com',
-  role: ['user'],
-  exp: 1_700_000_000,
+  id: 1,
+  username: 'admin',
+  name: 'Administrator',
 }
 
 describe('useAuthStore', () => {
   beforeEach(() => {
-    clearCookies()
     vi.resetModules()
   })
 
@@ -26,16 +23,11 @@ describe('useAuthStore', () => {
     expect(useAuthStore.getState().auth.user).toBeNull()
   })
 
-  it('persists access token so a new store instance reads it back', async () => {
+  it('keeps the access token in the active session', async () => {
     const useAuthStore = await importAuthStore()
     useAuthStore.getState().auth.setAccessToken('session-token')
 
-    vi.resetModules()
-    const useAuthStoreAfterReload = await importAuthStore()
-
-    expect(useAuthStoreAfterReload.getState().auth.accessToken).toBe(
-      'session-token'
-    )
+    expect(useAuthStore.getState().auth.accessToken).toBe('session-token')
   })
 
   it('clears persisted access token when resetAccessToken is used', async () => {
@@ -43,10 +35,7 @@ describe('useAuthStore', () => {
     useAuthStore.getState().auth.setAccessToken('to-clear')
     useAuthStore.getState().auth.resetAccessToken()
 
-    vi.resetModules()
-    const useAuthStoreAfterReload = await importAuthStore()
-
-    expect(useAuthStoreAfterReload.getState().auth.accessToken).toBe('')
+    expect(useAuthStore.getState().auth.accessToken).toBe('')
   })
 
   it('updates the signed-in user via setUser', async () => {

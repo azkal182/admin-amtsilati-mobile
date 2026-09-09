@@ -21,6 +21,7 @@ import { Route as errors404RouteImport } from './routes/(errors)/404'
 import { Route as errors403RouteImport } from './routes/(errors)/403'
 import { Route as errors401RouteImport } from './routes/(errors)/401'
 import { Route as authSignInRouteImport } from './routes/(auth)/sign-in'
+import { Route as authSessionExpiredRouteImport } from './routes/(auth)/session-expired'
 import { Route as AuthenticatedSettingsRouteRouteImport } from './routes/_authenticated/settings/route'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
 import { Route as AuthenticatedSettingsAppearanceRouteImport } from './routes/_authenticated/settings/appearance'
@@ -86,6 +87,11 @@ const authSignInRoute = authSignInRouteImport.update({
   path: '/sign-in',
   getParentRoute: () => rootRouteImport,
 } as any)
+const authSessionExpiredRoute = authSessionExpiredRouteImport.update({
+  id: '/(auth)/session-expired',
+  path: '/session-expired',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedSettingsRouteRoute =
   AuthenticatedSettingsRouteRouteImport.update({
     id: '/settings',
@@ -120,6 +126,7 @@ const AuthenticatedStoreProductsIndexRoute =
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
+  '/session-expired': typeof authSessionExpiredRoute
   '/sign-in': typeof authSignInRoute
   '/401': typeof errors401Route
   '/403': typeof errors403Route
@@ -136,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/store/products/': typeof AuthenticatedStoreProductsIndexRoute
 }
 export interface FileRoutesByTo {
+  '/session-expired': typeof authSessionExpiredRoute
   '/sign-in': typeof authSignInRoute
   '/401': typeof errors401Route
   '/403': typeof errors403Route
@@ -156,6 +164,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_authenticated/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
+  '/(auth)/session-expired': typeof authSessionExpiredRoute
   '/(auth)/sign-in': typeof authSignInRoute
   '/(errors)/401': typeof errors401Route
   '/(errors)/403': typeof errors403Route
@@ -177,6 +186,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/settings'
+    | '/session-expired'
     | '/sign-in'
     | '/401'
     | '/403'
@@ -193,6 +203,7 @@ export interface FileRouteTypes {
     | '/store/products/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/session-expired'
     | '/sign-in'
     | '/401'
     | '/403'
@@ -212,6 +223,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_authenticated'
     | '/_authenticated/settings'
+    | '/(auth)/session-expired'
     | '/(auth)/sign-in'
     | '/(errors)/401'
     | '/(errors)/403'
@@ -231,6 +243,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  authSessionExpiredRoute: typeof authSessionExpiredRoute
   authSignInRoute: typeof authSignInRoute
   errors401Route: typeof errors401Route
   errors403Route: typeof errors403Route
@@ -325,6 +338,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authSignInRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(auth)/session-expired': {
+      id: '/(auth)/session-expired'
+      path: '/session-expired'
+      fullPath: '/session-expired'
+      preLoaderRoute: typeof authSessionExpiredRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/settings': {
       id: '/_authenticated/settings'
       path: '/settings'
@@ -406,6 +426,7 @@ const AuthenticatedRouteRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  authSessionExpiredRoute: authSessionExpiredRoute,
   authSignInRoute: authSignInRoute,
   errors401Route: errors401Route,
   errors403Route: errors403Route,

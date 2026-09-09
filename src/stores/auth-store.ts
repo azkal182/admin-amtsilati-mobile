@@ -1,13 +1,18 @@
 import { create } from 'zustand'
-import { getCookie, setCookie, removeCookie } from '@/lib/cookies'
 
-const ACCESS_TOKEN = 'amtsilati_admin_access_token'
+const REFRESH_TOKEN = 'amtsilati_admin_refresh_token'
 
-interface AuthUser {
-  accountNo: string
-  email: string
-  role: string[]
-  exp: number
+export interface AuthUser {
+  id: number
+  username: string
+  name: string
+  iat?: number | null
+  exp?: number | null
+}
+
+function getRefreshToken() {
+  if (typeof window === 'undefined') return ''
+  return window.sessionStorage.getItem(REFRESH_TOKEN) ?? ''
 }
 
 interface AuthState {
@@ -16,44 +21,67 @@ interface AuthState {
     setUser: (user: AuthUser | null) => void
     accessToken: string
     setAccessToken: (accessToken: string) => void
+    refreshToken: string
+    setRefreshToken: (refreshToken: string) => void
+    setSession: (session: {
+      user: AuthUser
+      accessToken: string
+      refreshToken: string
+    }) => void
     resetAccessToken: () => void
     reset: () => void
   }
 }
 
 export const useAuthStore = create<AuthState>()((set) => {
-  const cookieState = getCookie(ACCESS_TOKEN)
-  let initToken = ''
-  if (cookieState) {
-    try {
-      const parsed = JSON.parse(cookieState)
-      if (typeof parsed === 'string') initToken = parsed
-    } catch {
-      removeCookie(ACCESS_TOKEN)
-    }
-  }
   return {
     auth: {
       user: null,
       setUser: (user) =>
         set((state) => ({ ...state, auth: { ...state.auth, user } })),
-      accessToken: initToken,
+      accessToken: '',
       setAccessToken: (accessToken) =>
+        set((state) => ({ ...state, auth: { ...state.auth, accessToken } })),
+      refreshToken: getRefreshToken(),
+      setRefreshToken: (refreshToken) =>
         set((state) => {
-          setCookie(ACCESS_TOKEN, JSON.stringify(accessToken))
-          return { ...state, auth: { ...state.auth, accessToken } }
+          if (typeof window !== 'undefined') {
+            if (refreshToken) {
+              window.sessionStorage.setItem(REFRESH_TOKEN, refreshToken)
+            } else {
+              window.sessionStorage.removeItem(REFRESH_TOKEN)
+            }
+          }
+          return { ...state, auth: { ...state.auth, refreshToken } }
         }),
-      resetAccessToken: () =>
+      setSession: ({ user, accessToken, refreshToken }) =>
         set((state) => {
-          removeCookie(ACCESS_TOKEN)
-          return { ...state, auth: { ...state.auth, accessToken: '' } }
-        }),
-      reset: () =>
-        set((state) => {
-          removeCookie(ACCESS_TOKEN)
+          if (typeof window !== 'undefined') {
+            window.sessionStorage.setItem(REFRESH_TOKEN, refreshToken)
+          }
           return {
             ...state,
-            auth: { ...state.auth, user: null, accessToken: '' },
+            auth: { ...state.auth, user, accessToken, refreshToken },
+          }
+        }),
+      resetAccessToken: () =>
+        set((state) => ({
+          ...state,
+          auth: { ...state.auth, accessToken: '' },
+        })),
+      reset: () =>
+        set((state) => {
+          if (typeof window !== 'undefined') {
+            window.sessionStorage.removeItem(REFRESH_TOKEN)
+          }
+          return {
+            ...state,
+            auth: {
+              ...state.auth,
+              user: null,
+              accessToken: '',
+              refreshToken: '',
+            },
           }
         }),
     },

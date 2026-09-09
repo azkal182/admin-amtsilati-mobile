@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import {
+  MutationCache,
   QueryCache,
   QueryClient,
   QueryClientProvider,
@@ -17,6 +18,21 @@ import { ThemeProvider } from './context/theme-provider'
 import { routeTree } from './routeTree.gen'
 // Styles
 import './styles/index.css'
+
+function handleAuthError(error: unknown) {
+  if (!(error instanceof ApiRequestError)) return
+
+  if (error.status === 401) {
+    toast.error('Session expired!')
+    useAuthStore.getState().auth.reset()
+    const redirect = `${router.history.location.href}`
+    router.navigate({ to: '/session-expired', search: { redirect } })
+  }
+
+  if (error.status === 403) {
+    router.navigate({ to: '/403', replace: true })
+  }
+}
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -47,24 +63,19 @@ const queryClient = new QueryClient({
       },
     },
   },
+  mutationCache: new MutationCache({
+    onError: (error) => handleAuthError(error),
+  }),
   queryCache: new QueryCache({
     onError: (error) => {
       if (error instanceof ApiRequestError) {
-        if (error.status === 401) {
-          toast.error('Session expired!')
-          useAuthStore.getState().auth.reset()
-          const redirect = `${router.history.location.href}`
-          router.navigate({ to: '/sign-in', search: { redirect } })
-        }
+        handleAuthError(error)
         if (error.status === 500) {
           toast.error('Internal Server Error!')
           // Only navigate to error page in production to avoid disrupting HMR in development
           if (import.meta.env.PROD) {
             router.navigate({ to: '/500' })
           }
-        }
-        if (error.status === 403) {
-          // router.navigate("/forbidden", { replace: true });
         }
       }
     },

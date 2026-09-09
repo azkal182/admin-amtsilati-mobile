@@ -1,8 +1,9 @@
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useNavigate, useSearch } from '@tanstack/react-router'
 import { LogIn } from 'lucide-react'
-import { toast } from 'sonner'
+import { ApiRequestError } from '@/api/types'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -15,6 +16,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
+import { signInAdmin, getSafeRedirect } from '@/features/auth/auth-session'
 
 const formSchema = z.object({
   username: z.string().min(1, 'Username wajib diisi.'),
@@ -24,14 +26,27 @@ const formSchema = z.object({
 type UserAuthFormProps = React.HTMLAttributes<HTMLFormElement>
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
+  const navigate = useNavigate()
+  const { redirect } = useSearch({ from: '/(auth)/sign-in' })
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { username: '', password: '' },
   })
 
-  function onSubmit(_data: z.infer<typeof formSchema>) {
-    // Admin API integration is implemented in Fase 2.
-    toast.info('Integrasi login admin akan tersedia pada Fase 2.')
+  async function onSubmit(data: z.infer<typeof formSchema>) {
+    try {
+      await signInAdmin(data)
+      await navigate({
+        to: getSafeRedirect(redirect),
+        replace: true,
+      })
+    } catch (error) {
+      const message =
+        error instanceof ApiRequestError && [400, 401].includes(error.status)
+          ? 'Username atau password admin salah.'
+          : 'Login gagal. Silakan coba lagi.'
+      form.setError('root', { message })
+    }
   }
 
   return (
@@ -75,9 +90,14 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             </FormItem>
           )}
         />
-        <Button className='mt-2'>
+        {form.formState.errors.root?.message && (
+          <p className='text-sm text-destructive' role='alert'>
+            {form.formState.errors.root.message}
+          </p>
+        )}
+        <Button className='mt-2' disabled={form.formState.isSubmitting}>
           <LogIn />
-          Masuk
+          {form.formState.isSubmitting ? 'Memproses...' : 'Masuk'}
         </Button>
       </form>
     </Form>
