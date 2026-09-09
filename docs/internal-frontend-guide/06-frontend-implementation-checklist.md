@@ -23,7 +23,7 @@
 - [ ] Admin users.
 - [ ] Student helper.
 - [ ] Syahriyah sync, tariff, snapshot, pengurus.
-- [ ] Store products dan signed upload.
+- [ ] Store products, signed upload, dan soft delete.
 - [ ] Calendar events: list/detail/create/edit/archive dengan permission `events.manage`.
 - [ ] Validasi aksi publish/unpublish dengan permission `events.publish`.
 - [ ] Loading, empty, error, dan success state pada setiap halaman.

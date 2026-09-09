@@ -91,8 +91,23 @@ Riwayat pengurus `B1800110` sudah di-release dan tidak memiliki assignment aktif
 
 Pada beberapa percobaan frontend dev server, backend sempat mengembalikan `ERR_CONNECTION_REFUSED` pada port 4054, lalu kembali normal tanpa perubahan frontend. Mohon cek process supervisor/dev server lifecycle dan pastikan backend tetap listen pada `localhost` serta `127.0.0.1` selama sesi E2E.
 
+## 7. RESOLVED — Store soft delete tersedia setelah migration backend
+
+OpenAPI dan guide terbaru mendokumentasikan `DELETE /internal/admin/store/products/{id}` dengan response status `DELETED`. Retest pertama menerima `405`, lalu setelah migration backend request mengembalikan `200` sesuai kontrak.
+
+Expected:
+
+- endpoint menerima `DELETE` dengan admin JWT dan permission `store.manage`;
+- response `200` mengembalikan `data: { id, status: "DELETED" }`;
+- product tidak lagi muncul pada list/detail admin maupun endpoint client.
+
+Retest setelah migration pada fixture `E2E_STORE_DELETE_MIGRATION_20260910` (id `6`) menghasilkan: create `200`, DELETE `200`, dan GET detail sesudah delete `404`. Status: **resolved**. Fixture tersebut perlu dibersihkan dengan command prefix `E2E_STORE_DELETE_MIGRATION_`.
+
+Retest browser 2026-09-10: Admin User create dan Store delete UI berhasil. Events create/edit/archive UI berhasil; setelah identity admin dipulihkan dari session storage, publish dan unpublish UI juga berhasil setelah refresh form.
+
 ## Status dampak ke gate
 
 - Gate 4 API/mutation: lulus untuk sync, conflict, tariff, snapshot, assign, dan release. Temuan token diabaikan sesuai keputusan proyek.
-- Gate 6.1: API mutation lulus dan browser create/edit/archive lulus; browser publish UI serta cleanup fixture terbaru masih pending.
-- Gate 7: quality/browser suite frontend lulus; release readiness masih menunggu upload Cloudinary aktual, browser E2E mutation seluruh modul, keyboard/focus review, cleanup fixture Events terbaru, dan keputusan `knip`.
+- Gate 6.1: API dan seluruh browser mutation Event lulus setelah session identity admin dipersist; cleanup fixture terbaru tinggal housekeeping.
+- Gate 5: frontend delete product sudah diimplementasikan dan runtime soft delete setelah migration backend sudah lulus; upload file Cloudinary aktual tetap menunggu lifecycle delete asset.
+- Gate 7: quality/browser suite frontend lulus; release readiness masih menunggu upload Cloudinary aktual, browser E2E mutation penuh, keyboard/focus review, cleanup fixture terbaru, dan keputusan `knip`.

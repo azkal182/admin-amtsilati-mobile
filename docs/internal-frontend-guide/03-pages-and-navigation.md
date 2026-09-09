@@ -56,6 +56,7 @@ Dashboard belum memiliki endpoint agregasi khusus. Bangun dashboard secara modul
 
 - List filter `available`, search, pagination.
 - Create/edit product dengan validasi HTTPS image URL, harga non-negatif, dan `maxBuy >= 1`.
+- Delete product memakai konfirmasi dan `DELETE /internal/admin/store/products/{id}`. Operasi ini soft delete, sehingga product tidak lagi ditampilkan dan tidak dapat diakses client.
 - Upload image melalui signed upload flow, lalu simpan URL final pada product.
 
 ## 4. Domain rencana, belum boleh diaktifkan

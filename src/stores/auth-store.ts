@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 
 const REFRESH_TOKEN = 'amtsilati_admin_refresh_token'
+const AUTH_USER = 'amtsilati_admin_user'
 
 export interface AuthUser {
   id: number
@@ -13,6 +14,18 @@ export interface AuthUser {
 function getRefreshToken() {
   if (typeof window === 'undefined') return ''
   return window.sessionStorage.getItem(REFRESH_TOKEN) ?? ''
+}
+
+function getUser(): AuthUser | null {
+  if (typeof window === 'undefined') return null
+  const value = window.sessionStorage.getItem(AUTH_USER)
+  if (!value) return null
+  try {
+    return JSON.parse(value) as AuthUser
+  } catch {
+    window.sessionStorage.removeItem(AUTH_USER)
+    return null
+  }
 }
 
 interface AuthState {
@@ -36,9 +49,16 @@ interface AuthState {
 export const useAuthStore = create<AuthState>()((set) => {
   return {
     auth: {
-      user: null,
+      user: getUser(),
       setUser: (user) =>
-        set((state) => ({ ...state, auth: { ...state.auth, user } })),
+        set((state) => {
+          if (typeof window !== 'undefined') {
+            if (user)
+              window.sessionStorage.setItem(AUTH_USER, JSON.stringify(user))
+            else window.sessionStorage.removeItem(AUTH_USER)
+          }
+          return { ...state, auth: { ...state.auth, user } }
+        }),
       accessToken: '',
       setAccessToken: (accessToken) =>
         set((state) => ({ ...state, auth: { ...state.auth, accessToken } })),
@@ -58,6 +78,7 @@ export const useAuthStore = create<AuthState>()((set) => {
         set((state) => {
           if (typeof window !== 'undefined') {
             window.sessionStorage.setItem(REFRESH_TOKEN, refreshToken)
+            window.sessionStorage.setItem(AUTH_USER, JSON.stringify(user))
           }
           return {
             ...state,
@@ -73,6 +94,7 @@ export const useAuthStore = create<AuthState>()((set) => {
         set((state) => {
           if (typeof window !== 'undefined') {
             window.sessionStorage.removeItem(REFRESH_TOKEN)
+            window.sessionStorage.removeItem(AUTH_USER)
           }
           return {
             ...state,

@@ -5,6 +5,7 @@ import type {
   StoreProduct,
   StoreProductInput,
   StoreProductSearch,
+  StoreProductDelete,
   StoreUploadSign,
 } from './types'
 
@@ -28,6 +29,8 @@ export const storeApi = {
     adminApi.post<StoreProduct>('/internal/admin/store/products', input),
   update: (id: number, input: StoreProductInput) =>
     adminApi.patch<StoreProduct>(`/internal/admin/store/products/${id}`, input),
+  delete: (id: number) =>
+    adminApi.delete<StoreProductDelete>(`/internal/admin/store/products/${id}`),
   signUpload: () =>
     adminApi.post<StoreUploadSign>('/internal/admin/store/uploads/sign'),
 }

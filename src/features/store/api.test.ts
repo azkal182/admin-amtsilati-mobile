@@ -33,6 +33,9 @@ describe('store API', () => {
     const patch = vi
       .spyOn(adminApi, 'patch')
       .mockResolvedValue({ success: true, data: {}, meta: {} })
+    const del = vi
+      .spyOn(adminApi, 'delete')
+      .mockResolvedValue({ success: true, data: {}, meta: {} })
     const input = {
       name: 'Kitab Amtsilati',
       description: 'Buku belajar',
@@ -45,6 +48,7 @@ describe('store API', () => {
     await storeApi.get(7)
     await storeApi.create(input)
     await storeApi.update(7, input)
+    await storeApi.delete(7)
     await storeApi.signUpload()
 
     expect(get).toHaveBeenCalledWith('/internal/admin/store/products/7')
@@ -61,6 +65,7 @@ describe('store API', () => {
       '/internal/admin/store/products/7',
       input
     )
+    expect(del).toHaveBeenCalledWith('/internal/admin/store/products/7')
   })
 
   it('retries Cloudinary upload on 429 and returns only secure URL', async () => {

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate, useParams } from '@tanstack/react-router'
-import { ArrowLeft, Upload } from 'lucide-react'
+import { ArrowLeft, Trash2, Upload } from 'lucide-react'
 import { toast } from 'sonner'
 import { ApiRequestError } from '@/api/types'
 import { handleServerError } from '@/lib/handle-server-error'
@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
+import { ConfirmDialog } from '@/components/confirm-dialog'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
@@ -25,10 +26,29 @@ export function StoreProductEditorPage() {
   const isNew = !params.id
   const navigate = useNavigate()
   const client = useQueryClient()
+  const [deleteOpen, setDeleteOpen] = useState(false)
   const query = useQuery({
     queryKey: ['store-product', params.id],
     queryFn: () => storeApi.get(Number(params.id)),
     enabled: !isNew,
+  })
+  const deleteMutation = useMutation({
+    mutationFn: () => storeApi.delete(Number(params.id)),
+    onSuccess: async () => {
+      await client.invalidateQueries({ queryKey: ['store-products'] })
+      await client.removeQueries({ queryKey: ['store-product', params.id] })
+      toast.success('Produk berhasil dihapus.')
+      await navigate({
+        to: '/store/products',
+        search: { page: 1, limit: 20, search: '', available: 'all' },
+      })
+    },
+    onError: (error) => {
+      handleServerError(error)
+      toast.error(
+        error instanceof Error ? error.message : 'Produk gagal dihapus.'
+      )
+    },
   })
   if (!isNew && query.isPending)
     return (
@@ -56,6 +76,8 @@ export function StoreProductEditorPage() {
         initial={query.data?.data}
         isNew={isNew}
         saving={false}
+        deleting={deleteMutation.isPending}
+        onDelete={() => setDeleteOpen(true)}
         onSubmit={async (input, file) => {
           let payload = input
           if (file) {
@@ -97,6 +119,16 @@ export function StoreProductEditorPage() {
           })
         }}
       />
+      <ConfirmDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        title='Hapus produk?'
+        desc='Produk akan dibuat tidak tersedia melalui soft delete dan tidak lagi tampil di katalog.'
+        confirmText='Hapus produk'
+        destructive
+        isLoading={deleteMutation.isPending}
+        handleConfirm={() => deleteMutation.mutate()}
+      />
     </EditorLayout>
   )
 }
@@ -125,6 +157,8 @@ function ProductForm({
   initial,
   isNew,
   saving,
+  deleting,
+  onDelete,
   onSubmit,
 }: {
   initial?: {
@@ -137,6 +171,8 @@ function ProductForm({
   }
   isNew: boolean
   saving: boolean
+  deleting: boolean
+  onDelete: () => void
   onSubmit: (input: StoreProductInput, file?: File) => Promise<void>
 }) {
   const [name, setName] = useState(initial?.name ?? '')
@@ -275,9 +311,22 @@ function ProductForm({
               {error}
             </p>
           )}
-          <Button disabled={mutation.isPending || saving}>
-            {mutation.isPending ? 'Menyimpan...' : 'Simpan produk'}
-          </Button>
+          <div className='flex flex-wrap gap-2'>
+            <Button disabled={mutation.isPending || saving || deleting}>
+              {mutation.isPending ? 'Menyimpan...' : 'Simpan produk'}
+            </Button>
+            {!isNew && (
+              <Button
+                type='button'
+                variant='destructive'
+                onClick={onDelete}
+                disabled={mutation.isPending || saving || deleting}
+              >
+                <Trash2 />
+                Hapus produk
+              </Button>
+            )}
+          </div>
         </form>
       </CardContent>
     </Card>

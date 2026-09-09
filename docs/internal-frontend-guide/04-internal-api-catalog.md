@@ -61,6 +61,7 @@ Response `AdminStudent` menggunakan casing legacy (`IDSantri`, `NIS`, `Nama`, `A
 | POST | `/internal/admin/store/products` | `AdminStoreProductUpsertRequest` |
 | GET | `/internal/admin/store/products/{id}` | - |
 | PATCH | `/internal/admin/store/products/{id}` | `AdminStoreProductUpsertRequest` |
+| DELETE | `/internal/admin/store/products/{id}` | soft delete; `store.manage` |
 | POST | `/internal/admin/store/uploads/sign` | - |
 
 ## 6. Calendar events — `events.manage`

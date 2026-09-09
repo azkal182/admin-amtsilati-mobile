@@ -99,6 +99,8 @@ type Tariff = {
 Nominal integer adalah IDR unit terkecil yang dikirim API. Format tampilan dilakukan frontend.
 Kombinasi `hijriPeriod` dan `category` adalah unique key; request upsert berulang memperbarui row yang sama dan tidak membuat duplicate.
 
+Admin dapat menghapus product melalui `DELETE /internal/admin/store/products/{id}`. Operasi ini adalah soft delete: response mengembalikan `data: { id, status: "DELETED" }`, product dibuat tidak tersedia, dan tidak lagi muncul pada endpoint list/detail admin maupun endpoint client. Data tetap disimpan untuk audit dan referensi masa depan.
+
 ## 4. Flow store upload
 
 1. Minta `POST /internal/admin/store/uploads/sign`.

@@ -94,6 +94,10 @@ Lulus jika login, protected route, refresh, logout, 401, 403, dan session expire
 
 ### Gate 3
 
+Status terbaru 2026-09-10: API RBAC tanpa `users.manage` sudah terverifikasi `403` dan fixture `E2E_USERS_` sudah dibersihkan. Yang tersisa hanya browser mutation Admin Users.
+
+Retest browser terbaru: create Admin User melalui UI berhasil dengan fixture `E2E_USERS_BROWSER_2311`. Cleanup fixture tersebut masih perlu dijalankan.
+
 Status terbaru: API RBAC sudah lulus dengan user fixture tanpa `users.manage` (`403`), dan cleanup `E2E_USERS_` telah dikonfirmasi user. Browser mutation Admin Users belum diverifikasi secara runtime.
 
 Retest API tambahan: fixture `E2E_USERS_20260909` dengan role `event_editor` tidak memiliki `users.manage` dan menerima `403` pada list Admin Users. Browser mutation dan cleanup fixture user masih tersisa.
@@ -142,10 +146,19 @@ Lulus jika sync, tariff, snapshot, dan pengurus dapat dijalankan tanpa memakai e
 - [x] Submit disabled selama upload/mutation.
 - [x] Query product di-refresh setelah create/update.
 - [x] Error upload dan error product dibedakan.
+- [x] Delete product memakai soft delete, confirmation, dan invalidation query.
 
 ### Gate 5
 
+Status terbaru 2026-09-10: frontend delete product sudah tersedia; create/update, signed upload parameters, dan soft delete runtime sudah diverifikasi (`DELETE 200`, detail sesudahnya `404`). Yang tersisa adalah upload file Cloudinary aktual, browser mutation delete, dan lifecycle delete asset Cloudinary.
+
+Retest browser terbaru: delete product melalui UI berhasil dengan confirmation dialog, toast sukses, dan redirect kembali ke list. Upload file aktual masih ditahan sampai lifecycle delete asset Cloudinary tersedia.
+
+Retest terbaru sesuai keputusan user: signed upload Cloudinary aktual berhasil (`200`) dan mengembalikan `secure_url`; pengujian dilakukan tanpa delete asset. Dengan pengecualian lifecycle cleanup asset, Gate 5 dapat dianggap selesai/accepted.
+
 Status terbaru: list, signed upload parameters, serta create/update product fixture sudah lulus melalui API. Cleanup `E2E_STORE_` telah dikonfirmasi user. Upload file Cloudinary aktual menunggu fitur delete asset backend selesai.
+
+Frontend delete product sudah diimplementasikan dengan confirmation dialog, mutation `DELETE /internal/admin/store/products/{id}`, invalidation list/detail, dan success/error feedback. Retest runtime setelah migration backend menghasilkan create `200`, DELETE `200`, dan GET detail sesudah delete `404`. Gate 5 tinggal menunggu verifikasi upload file aktual dan browser mutation delete.
 
 Retest API tambahan: create dan update fixture `E2E_STORE_20260909` berhasil dengan status `200`; signed upload parameters juga berhasil dengan status `200`. Upload file aktual dan cleanup fixture Store masih tersisa.
 
@@ -178,7 +191,7 @@ Gate 6 lulus untuk implementasi contract dan UI pada 2026-09-09: list dengan fil
 
 ### Alasan pemisahan
 
-Implementasi mutation sudah tersedia di frontend, tetapi create, edit, publish/unpublish, dan archive belum boleh dijalankan terhadap katalog kalender operasional tanpa akun permission yang tepat, data uji terisolasi, dan prosedur cleanup. Fase ini khusus untuk membuktikan perilaku runtime end-to-end.
+Implementasi mutation sudah tersedia di frontend. Fase ini membuktikan perilaku runtime end-to-end dengan akun permission yang tepat, data uji terisolasi, dan prosedur cleanup.
 
 ### Pekerjaan
 
@@ -204,7 +217,11 @@ Implementasi mutation sudah tersedia di frontend, tetapi create, edit, publish/u
 
 ### Gate 6.1
 
-Status: **pending** pada 2026-09-09. API create/edit/publish/unpublish/archive lulus. Browser nyata juga berhasil login, create, edit, dan archive event; percobaan publish dari UI masih perlu diulang dengan selector Radix combobox yang tepat. Fixture browser terbaru sudah diarsipkan, tetapi cleanup prefix `E2E_EVENTS_` perlu dijalankan ulang setelah pengujian terbaru.
+Status: **passed** pada 2026-09-10. API create/edit/publish/unpublish/archive lulus. Browser nyata berhasil login, create, edit, refresh form, publish, unpublish, dan archive event; opsi Published tetap aktif setelah refresh karena identity admin dipulihkan dari session storage. Fixture browser terbaru sudah diarsipkan; cleanup prefix `E2E_EVENTS_` tetap perlu dijalankan ulang untuk fixture test yang baru dibuat.
+
+Retest 2026-09-10: browser create/edit/archive berhasil; publish dan unpublish melalui UI berhasil dengan opsi `Published` aktif. API publish/unpublish juga tetap lulus.
+
+Retest lanjutan: akar masalah sebelumnya adalah identity admin hilang setelah refresh, sehingga query effective access tidak berjalan. Session identity sekarang dipulihkan dan request access merespons `200`.
 
 ## Fase 7 — Hardening, testing, dan release readiness
 
@@ -228,5 +245,7 @@ Status: **pending** pada 2026-09-09. API create/edit/publish/unpublish/archive l
 - [x] OpenAPI traceability untuk endpoint aktif tersedia di Definition of Done.
 
 ### Gate 7
+
+Status terbaru 2026-09-10: Chromium dapat berjalan di luar sandbox dan browser suite 57/57 lulus. Audit release masih menunggu Store upload/delete E2E, browser mutation penuh, keyboard/focus review, cleanup fixture event terbaru, dan keputusan `knip`.
 
 Fase 7 audit otomatis diulang pada 2026-09-09: format check, lint, 48 unit test, TypeScript, dan production build berhasil. Browser suite berhasil setelah Chromium Playwright dijalankan di luar sandbox: 7 test files dan 57 test pass. Smoke browser nyata memverifikasi protected redirect, login, seluruh route aktif, mobile layout, serta Events create/edit/archive; viewport 390px tidak memiliki horizontal overflow pada route aktif. API smoke lintas modul berhasil: users, students, store products, signed upload, Store create/update, sync status, tariffs, pengurus, snapshot rebuild, serta event publish/unpublish/archive dan RBAC Admin Users `403`. CORS frontend `204` dan mengizinkan `http://localhost:5173`. `knip` tetap non-zero dan melaporkan 15 komponen foundation, 6 dependency, serta beberapa export yang belum dipakai; item tersebut belum dihapus karena masih fondasi reusable dan memerlukan review cleanup terpisah. Gate 7 masih pending karena upload file Cloudinary aktual, browser mutation Admin Users/Store/Events penuh, keyboard/focus review, cleanup fixture Events terbaru, dan keputusan `knip`.

@@ -29,3 +29,8 @@ export type StoreUploadSign = {
   folder: string
   expiresAt: string
 }
+
+export type StoreProductDelete = {
+  id: number
+  status: 'DELETED'
+}
