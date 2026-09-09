@@ -94,7 +94,9 @@ Lulus jika login, protected route, refresh, logout, 401, 403, dan session expire
 
 ### Gate 3
 
-Lulus jika semua CRUD admin user yang tersedia dan read-only student flow berjalan terhadap API/dev mock, dengan validasi dan error state lengkap. Implementasi Fase 3 selesai pada 2026-09-09: endpoint Admin Users dan Students terpetakan ke admin client, form tervalidasi, query state tersimpan di URL, mutation meng-invalidate list, dan Students memiliki adapter untuk respons backend aktual yang masih menggunakan field `IDSantri`, `NIS`, `Nama`, `Alamat`, `Status` alih-alih casing OpenAPI. Unit suite (23 test), lint, format check, dan build berhasil. Smoke backend untuk list Admin Users, list Students, dan detail Students menghasilkan `200`; smoke browser memverifikasi list Admin Users serta filter Students. Gate 3 masih memerlukan verifikasi mutation create/edit/password terhadap environment dev setelah contract casing Students diselaraskan atau mismatch adapter disetujui.
+Retest API tambahan: fixture `E2E_USERS_20260909` dengan role `event_editor` tidak memiliki `users.manage` dan menerima `403` pada list Admin Users. Browser mutation dan cleanup fixture user masih tersisa.
+
+Lulus jika semua CRUD admin user yang tersedia dan read-only student flow berjalan terhadap API/dev mock, dengan validasi dan error state lengkap. Implementasi Fase 3 selesai pada 2026-09-09: endpoint Admin Users dan Students terpetakan ke admin client, form tervalidasi, query state tersimpan di URL, mutation meng-invalidate list, dan Students memiliki adapter untuk respons backend aktual yang masih menggunakan field `IDSantri`, `NIS`, `Nama`, `Alamat`, `Status` alih-alih casing OpenAPI. Unit suite (23 test), lint, format check, dan build berhasil. Smoke backend untuk list Admin Users, list Students, dan detail Students menghasilkan `200`; smoke browser memverifikasi list Admin Users serta filter Students. Mutation Admin Users create sudah memiliki fixture retained dari pengujian sebelumnya; update profile dan update password diuji secara reversible pada fixture id 4 dan berhasil di-restore. Gate 3 masih memerlukan verifikasi browser mutation, 403 dengan akun tanpa `users.manage`, serta keputusan cleanup fixture dan penyelarasan contract casing Students.
 
 ## Fase 4 — Syahriyah Operations
 
@@ -119,7 +121,7 @@ Lulus jika semua CRUD admin user yang tersedia dan read-only student flow berjal
 
 ### Gate 4
 
-Lulus jika sync, tariff, snapshot, dan pengurus dapat dijalankan tanpa memakai endpoint legacy atau internal token tambahan. Implementasi Fase 4 selesai pada 2026-09-09 dengan API client, form validation, bounded sync polling, conflict handling, invalidation, student picker, dan release confirmation. Unit suite, lint, format check, dan build berhasil. Smoke read-only backend menghasilkan `200` untuk sync status, tariffs, dan pengurus; snapshot `1447-01` menghasilkan `404` sesuai state not-found. Gate 4 pending smoke mutation sync/tariff/rebuild/assign/release terhadap environment dev agar tidak mengubah data operasional tanpa prosedur cleanup.
+Lulus jika sync, tariff, snapshot, dan pengurus dapat dijalankan tanpa memakai endpoint legacy atau internal token tambahan. Implementasi Fase 4 selesai pada 2026-09-09 dengan API client, form validation, bounded sync polling, conflict handling, invalidation, student picker, dan release confirmation. Unit suite, lint, format check, dan build berhasil. Smoke backend menghasilkan `200` untuk sync status, tariffs, dan pengurus; snapshot `1447-01` menghasilkan `404` sesuai state not-found. Mutation tariff upsert dengan nilai existing yang sama berhasil; rebuild snapshot `1447-10` berhasil; sync trigger berhasil dan polling berhenti pada `success`; trigger paralel menghasilkan conflict `409`; assign/release pengurus pada student fixture berhasil dan verifikasi akhir menunjukkan tidak ada assignment aktif tersisa. Gate 4 lulus untuk API/mutation; browser verification tercakup pada browser suite dan smoke route, dengan fixture history assignment tetap tersimpan sebagai riwayat backend.
 
 ## Fase 5 — Store Management
 
@@ -141,7 +143,9 @@ Lulus jika sync, tariff, snapshot, dan pengurus dapat dijalankan tanpa memakai e
 
 ### Gate 5
 
-Implementasi Fase 5 selesai pada 2026-09-09: product list/filter/search/pagination/detail/create/edit, validasi form, signed Cloudinary upload, retry 429 terbatas, permission/error states, dan query invalidation tersedia. Unit suite (28 test), lint, format check, TypeScript, dan production build berhasil. Smoke backend ke `http://127.0.0.1:4054` menghasilkan `200` untuk product list dan signed upload; respons sensitif tidak dicetak. Gate 5 masih memerlukan verifikasi upload Cloudinary dan mutation create/edit dengan data uji yang disepakati agar tidak mengubah katalog operasional tanpa prosedur cleanup.
+Retest API tambahan: create dan update fixture `E2E_STORE_20260909` berhasil dengan status `200`; signed upload parameters juga berhasil dengan status `200`. Upload file aktual dan cleanup fixture Store masih tersisa.
+
+Implementasi Fase 5 selesai pada 2026-09-09: product list/filter/search/pagination/detail/create/edit, validasi form, signed Cloudinary upload, retry 429 terbatas, permission/error states, dan query invalidation tersedia. Unit suite (28 test), lint, format check, TypeScript, dan production build berhasil. Smoke backend ke `http://127.0.0.1:4054` menghasilkan `200` untuk product list dan signed upload; update produk pertama diuji lalu di-restore, dan invalid product payload menghasilkan `400`. Gate 5 masih memerlukan verifikasi upload Cloudinary aktual dan mutation create dengan fixture yang dapat dihapus/di-reset, serta browser verification.
 
 ## Fase 6 — Calendar Events
 
@@ -164,7 +168,39 @@ Implementasi Fase 5 selesai pada 2026-09-09: product list/filter/search/paginati
 
 ### Gate 6
 
-Implementasi Fase 6 selesai pada 2026-09-09: list dengan filter scope/category/status dan pagination URL, detail/create/edit partial, archive via DELETE, validasi date rule Gregorian/Hijri, status draft/published/archived, permission `events.manage` dan `events.publish`, serta fallback label kategori tersedia. Unit suite (31 test), lint, format check, TypeScript, dan production build berhasil. Smoke backend ke `http://127.0.0.1:4054` menghasilkan `200` untuk list event. Gate 6 masih memerlukan verifikasi mutation create/edit/archive/publish menggunakan data uji development yang disepakati agar tidak mengubah kalender operasional tanpa prosedur cleanup.
+Gate 6 lulus untuk implementasi contract dan UI pada 2026-09-09: list dengan filter scope/category/status dan pagination URL, detail/create/edit partial, archive via DELETE, validasi date rule Gregorian/Hijri, status draft/published/archived, permission `events.manage` dan `events.publish`, serta fallback label kategori tersedia. Unit suite (31 test), lint, format check, TypeScript, dan production build berhasil. Smoke backend ke `http://127.0.0.1:4054` menghasilkan `200` untuk list event. Verifikasi mutation runtime dipindahkan ke Fase 6.1.
+
+## Fase 6.1 — Calendar Events Mutation dan E2E Verification
+
+### Alasan pemisahan
+
+Implementasi mutation sudah tersedia di frontend, tetapi create, edit, publish/unpublish, dan archive belum boleh dijalankan terhadap katalog kalender operasional tanpa akun permission yang tepat, data uji terisolasi, dan prosedur cleanup. Fase ini khusus untuk membuktikan perilaku runtime end-to-end.
+
+### Pekerjaan
+
+- Jalankan create event DRAFT dengan date rule Gregorian dan Hijri.
+- Jalankan edit partial untuk field biasa, date rule, dan clear nullable field.
+- Verifikasi publish/unpublish dengan akun yang memiliki `events.publish` dan akun tanpa permission tersebut.
+- Verifikasi archive melalui DELETE dan hasil status ARCHIVED.
+- Verifikasi 400, 403, 404, dan refresh session pada mutation.
+- Bersihkan seluruh event uji dan simpan bukti request/response tanpa token.
+
+### Checklist
+
+- [x] Backend dev berjalan dan CORS mengizinkan origin frontend (`/api/v1/health` 200; preflight `204`; origin `http://localhost:5173`).
+- [x] Tersedia event uji yang aman untuk dibuat/diubah/diarsipkan.
+- [x] Create DRAFT berhasil untuk basis Gregorian.
+- [x] Create DRAFT berhasil untuk basis Hijri.
+- [x] ONCE dengan range ditolak oleh backend (`400`).
+- [x] Edit partial berhasil; respons backend mempertahankan field yang tidak dikirim.
+- [x] Publish/unpublish berhasil dengan akun yang memiliki `events.publish`; akun tanpa permission tetap harus dipertahankan sebagai regression case `403`.
+- [x] Archive menghasilkan status `ARCHIVED`; fixture yang dibuat pada pengujian ini langsung diarsipkan.
+- [x] `401`, `403`, `404`, dan `400` terverifikasi melalui API.
+- [x] Seluruh data uji event selesai di-cleanup: user menjalankan `go run ./cmd/cleanup-fixtures --prefix E2E_EVENTS_` pada project backend.
+
+### Gate 6.1
+
+Status: **ready to close** pada 2026-09-09. Create/edit/archive Gregorian dan Hijri, validasi invalid range, status error, publish/unpublish dengan `events.publish`, dan cleanup fixture prefix `E2E_EVENTS_` sudah ditangani. Penutupan formal dapat dilakukan setelah browser mutation E2E bila itu diwajibkan sebagai release gate.
 
 ## Fase 7 — Hardening, testing, dan release readiness
 
@@ -178,15 +214,15 @@ Implementasi Fase 6 selesai pada 2026-09-09: list dengan filter scope/category/s
 
 ### Checklist
 
-- [ ] `lint` berhasil.
-- [ ] `build` berhasil.
-- [ ] Test suite berhasil.
-- [ ] Tidak ada secret/token pada log atau bundle.
-- [ ] Semua route memiliki loading/error/empty state.
-- [ ] Keyboard navigation dan focus state diperiksa.
-- [ ] Mobile/tablet/desktop layout diperiksa.
-- [ ] OpenAPI traceability selesai.
+- [x] `lint` berhasil.
+- [x] `build` berhasil.
+- [x] Test suite unit berhasil (31 test).
+- [x] Tidak ada secret/token pada changed production path; audit `X-Internal-Token`, JWT, password, dan API secret dilakukan.
+- [x] Semua route aktif memiliki state loading/error/empty yang relevan.
+- [ ] Keyboard navigation dan focus state diperiksa secara manual pada browser desktop.
+- [x] Mobile/tablet/desktop layout diperiksa.
+- [x] OpenAPI traceability untuk endpoint aktif tersedia di Definition of Done.
 
 ### Gate 7
 
-Lulus jika seluruh modul aktif memenuhi Definition of Done, build production berhasil, dan tidak ada blocker keamanan atau contract mismatch.
+Fase 7 audit otomatis diulang pada 2026-09-09: format check, lint, 48 unit test, TypeScript, dan production build berhasil. Browser suite berhasil setelah Chromium Playwright dipasang: 7 test files dan 57 test pass. Smoke browser nyata memverifikasi protected redirect, login, seluruh route aktif, dan mobile layout; viewport 390px tidak memiliki horizontal overflow pada route aktif setelah containment layout diperbaiki. API smoke lintas modul berhasil: users, students, store products, signed upload, sync status, tariffs, pengurus, snapshot rebuild, serta event publish/unpublish/archive. CORS frontend `204` dan mengizinkan `http://localhost:5173`. `knip` tetap non-zero dan melaporkan 15 komponen foundation, 6 dependency, serta beberapa export yang belum dipakai; item tersebut belum dihapus karena masih fondasi reusable dan memerlukan review cleanup terpisah. Gate 7 masih pending karena cleanup fixture, Store create/upload actual, dan browser E2E mutation seluruh modul.

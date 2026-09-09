@@ -30,8 +30,8 @@ Frontend tidak perlu memverifikasi signature JWT untuk authorization bisnis; bac
 | `users.manage` | Kelola admin user |
 | `students.read` | Baca snapshot santri |
 | `syahriyah.manage` | Operasional Syahriyah |
-| `events.manage` | Kelola event kalender (buat, ubah, archive) |
-| `events.publish` | Publish atau unpublish event kalender |
+| `events.manage` | Kelola event kalender (buat, ubah detail, archive) |
+| `events.publish` | Publish atau unpublish event kalender tanpa mengubah detail |
 | `content.manage` | Rencana kelola content; endpoint belum tersedia |
 | `content.publish` | Rencana publish content; endpoint belum tersedia |
 | `store.manage` | Kelola katalog store |
@@ -42,6 +42,8 @@ Role seed saat ini: `super_admin`, `event_editor`, `event_publisher`, `content_e
 Untuk membaca role dan permission efektif seorang admin, gunakan `GET /internal/admin/users/{id}/access`. Daftar role tersedia melalui `GET /internal/admin/roles`, sedangkan daftar permission melalui `GET /internal/admin/permissions`. Seluruh endpoint ini membutuhkan `users.manage`.
 
 Assignment dilakukan dengan `POST /internal/admin/users/{id}/roles` dan body `{ "roleCode": "event_editor" }`. Penghapusan role menggunakan `DELETE /internal/admin/users/{id}/roles/{roleCode}`. Perubahan akses berlaku pada request berikutnya karena middleware membaca permission dari PostgreSQL pada setiap request.
+
+`event_editor` dapat membuat, mengubah detail, dan archive event. `event_publisher` hanya dapat melihat event dan mengubah status `DRAFT` atau `PUBLISHED`; role ini tidak dapat mengubah detail event atau archive. `super_admin` memiliki seluruh permission termasuk `events.publish`.
 
 ## 4. Permission UX
 

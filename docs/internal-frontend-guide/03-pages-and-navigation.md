@@ -40,7 +40,7 @@ Dashboard belum memiliki endpoint agregasi khusus. Bangun dashboard secara modul
 
 ### Students
 
-- Search by `idSantri`, NIS, atau nama.
+- Search by `idSantri`, NIS, atau nama. Response snapshot menggunakan casing legacy `IDSantri`, `NIS`, `Nama`, `Alamat`, dan `Status`.
 - Filter status.
 - Detail snapshot bersifat read-only.
 - Gunakan picker santri untuk kebutuhan flow Syahriyah, bukan input bebas jika data sudah tersedia.

@@ -8,6 +8,7 @@ Dokumentasi ini adalah rencana kerja utama untuk membangun panel admin Amtsilati
 - [Arsitektur dan struktur folder](./02-architecture.md)
 - [Fase implementasi dan gate](./03-phases-and-gates.md)
 - [Definition of done dan traceability](./04-definition-of-done.md)
+- [Backend follow-up dan temuan mismatch](./06-backend-follow-up.md)
 
 ## Keputusan proyek
 
@@ -28,10 +29,11 @@ Dokumentasi ini adalah rencana kerja utama untuk membangun panel admin Amtsilati
 - [x] Fase 1 — Foundation, API client, dan application shell
 - [x] Fase 2 — Admin authentication dan session lifecycle
 - [ ] Fase 3 — Admin Users dan Students (implementasi selesai; Gate 3 pending)
-- [ ] Fase 4 — Syahriyah Operations (implementasi selesai; Gate 4 pending)
+- [x] Fase 4 — Syahriyah Operations (implementasi dan API/mutation verification selesai; Gate 4 lulus)
 - [ ] Fase 5 — Store Management (implementasi selesai; Gate 5 pending mutation/upload)
-- [ ] Fase 6 — Calendar Events (implementasi selesai; Gate 6 pending mutation)
-- [ ] Fase 7 — Hardening, testing, dan release readiness
+- [x] Fase 6 — Calendar Events (Gate 6 lulus untuk contract/UI)
+- [x] Fase 6.1 — Calendar Events Mutation dan E2E Verification (API mutation dan cleanup dilaporkan selesai; formal browser mutation review tersisa)
+- [ ] Fase 7 — Hardening, testing, dan release readiness (quality/browser audit selesai; Store E2E, browser mutation penuh, dan final review tersisa)
 
 Fase 2 sudah diimplementasikan, diuji dengan unit test, dan diverifikasi melalui browser pada `http://localhost:5173` menggunakan backend `http://localhost:4054`. Flow yang terverifikasi mencakup protected redirect, login sukses, pemulihan session setelah navigasi ulang, logout dan cleanup, kredensial invalid, 403, serta session expired. Chromium Playwright belum tersedia di environment, sehingga verifikasi browser menggunakan In-app Browser.
 

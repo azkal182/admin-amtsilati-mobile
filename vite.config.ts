@@ -24,6 +24,11 @@ export default defineConfig({
   test: {
     silent: 'passed-only',
     unstubEnvs: true,
+    include: [
+      'src/**/*.test.tsx',
+      'src/hooks/use-table-url-state.test.ts',
+      'src/lib/cookies.test.ts',
+    ],
     browser: {
       enabled: true,
       provider: playwright(),

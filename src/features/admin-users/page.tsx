@@ -180,7 +180,7 @@ export function AdminUsersPage() {
             Tambah admin
           </Button>
         </div>
-        <Card>
+        <Card className='min-w-0'>
           <CardHeader>
             <CardTitle className='flex items-center justify-between gap-3'>
               <span>Daftar administrator</span>
@@ -195,7 +195,7 @@ export function AdminUsersPage() {
               </Button>
             </CardTitle>
           </CardHeader>
-          <CardContent className='space-y-4'>
+          <CardContent className='min-w-0 space-y-4'>
             <form
               className='flex max-w-md gap-2'
               onSubmit={(event) => {
@@ -251,61 +251,63 @@ export function AdminUsersPage() {
               />
             ) : (
               <>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Username</TableHead>
-                      <TableHead>Nama</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className='text-end'>Aksi</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {users.map((user) => (
-                      <TableRow key={user.id}>
-                        <TableCell className='font-medium'>
-                          {user.username}
-                        </TableCell>
-                        <TableCell>{user.name}</TableCell>
-                        <TableCell>
-                          <Badge
-                            variant={user.isActive ? 'default' : 'secondary'}
-                          >
-                            {user.isActive ? 'Aktif' : 'Nonaktif'}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className='flex justify-end gap-2'>
-                            <Button
-                              variant='outline'
-                              size='sm'
-                              onClick={() => setEditor(user)}
-                            >
-                              <Pencil />
-                              Edit
-                            </Button>
-                            <Button
-                              variant='outline'
-                              size='sm'
-                              onClick={() => setPasswordUser(user)}
-                            >
-                              <KeyRound />
-                              Password
-                            </Button>
-                            <Button
-                              variant='outline'
-                              size='sm'
-                              onClick={() => setAccessUser(user)}
-                            >
-                              <ShieldCheck />
-                              Akses
-                            </Button>
-                          </div>
-                        </TableCell>
+                <div className='w-full overflow-x-auto'>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Username</TableHead>
+                        <TableHead>Nama</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className='text-end'>Aksi</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {users.map((user) => (
+                        <TableRow key={user.id}>
+                          <TableCell className='font-medium'>
+                            {user.username}
+                          </TableCell>
+                          <TableCell>{user.name}</TableCell>
+                          <TableCell>
+                            <Badge
+                              variant={user.isActive ? 'default' : 'secondary'}
+                            >
+                              {user.isActive ? 'Aktif' : 'Nonaktif'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div className='flex justify-end gap-2'>
+                              <Button
+                                variant='outline'
+                                size='sm'
+                                onClick={() => setEditor(user)}
+                              >
+                                <Pencil />
+                                Edit
+                              </Button>
+                              <Button
+                                variant='outline'
+                                size='sm'
+                                onClick={() => setPasswordUser(user)}
+                              >
+                                <KeyRound />
+                                Password
+                              </Button>
+                              <Button
+                                variant='outline'
+                                size='sm'
+                                onClick={() => setAccessUser(user)}
+                              >
+                                <ShieldCheck />
+                                Akses
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
                 <div className='flex items-center justify-between border-t pt-4 text-sm text-muted-foreground'>
                   <span>
                     {pagination?.total_records ?? users.length} administrator

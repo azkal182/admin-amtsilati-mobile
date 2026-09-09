@@ -32,8 +32,8 @@ import { ThemeSwitch } from '@/components/theme-switch'
 import { listCalendarEvents } from './api'
 
 export function CalendarEventsPage() {
-  const search = useSearch({ from: '/_authenticated/events' })
-  const navigate = useNavigate({ from: '/events' })
+  const search = useSearch({ from: '/_authenticated/events/' })
+  const navigate = useNavigate({ from: '/events/' })
   const query = useQuery({
     queryKey: ['calendar-events', search],
     queryFn: () => listCalendarEvents(search),

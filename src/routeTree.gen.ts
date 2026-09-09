@@ -24,6 +24,7 @@ import { Route as authSignInRouteImport } from './routes/(auth)/sign-in'
 import { Route as authSessionExpiredRouteImport } from './routes/(auth)/session-expired'
 import { Route as AuthenticatedSettingsRouteRouteImport } from './routes/_authenticated/settings/route'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
+import { Route as AuthenticatedEventsIndexRouteImport } from './routes/_authenticated/events/index'
 import { Route as AuthenticatedStudentsIdSantriRouteImport } from './routes/_authenticated/students/$idSantri'
 import { Route as AuthenticatedSettingsAppearanceRouteImport } from './routes/_authenticated/settings/appearance'
 import { Route as AuthenticatedEventsNewRouteImport } from './routes/_authenticated/events/new'
@@ -109,6 +110,12 @@ const AuthenticatedSettingsIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedSettingsRouteRoute,
   } as any)
+const AuthenticatedEventsIndexRoute =
+  AuthenticatedEventsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedEventsRoute,
+  } as any)
 const AuthenticatedStudentsIdSantriRoute =
   AuthenticatedStudentsIdSantriRouteImport.update({
     id: '/$idSantri',
@@ -175,6 +182,7 @@ export interface FileRoutesByFullPath {
   '/events/new': typeof AuthenticatedEventsNewRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/students/$idSantri': typeof AuthenticatedStudentsIdSantriRoute
+  '/events/': typeof AuthenticatedEventsIndexRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
   '/store/products/$id': typeof AuthenticatedStoreProductsIdRoute
   '/store/products/new': typeof AuthenticatedStoreProductsNewRoute
@@ -189,7 +197,6 @@ export interface FileRoutesByTo {
   '/500': typeof errors500Route
   '/503': typeof errors503Route
   '/admin-users': typeof AuthenticatedAdminUsersRoute
-  '/events': typeof AuthenticatedEventsRouteWithChildren
   '/students': typeof AuthenticatedStudentsRouteWithChildren
   '/syahriyah': typeof AuthenticatedSyahriyahRoute
   '/': typeof AuthenticatedIndexRoute
@@ -198,6 +205,7 @@ export interface FileRoutesByTo {
   '/events/new': typeof AuthenticatedEventsNewRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/students/$idSantri': typeof AuthenticatedStudentsIdSantriRoute
+  '/events': typeof AuthenticatedEventsIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/store/products/$id': typeof AuthenticatedStoreProductsIdRoute
   '/store/products/new': typeof AuthenticatedStoreProductsNewRoute
@@ -224,6 +232,7 @@ export interface FileRoutesById {
   '/_authenticated/events/new': typeof AuthenticatedEventsNewRoute
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/_authenticated/students/$idSantri': typeof AuthenticatedStudentsIdSantriRoute
+  '/_authenticated/events/': typeof AuthenticatedEventsIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/_authenticated/store/products/$id': typeof AuthenticatedStoreProductsIdRoute
   '/_authenticated/store/products/new': typeof AuthenticatedStoreProductsNewRoute
@@ -250,6 +259,7 @@ export interface FileRouteTypes {
     | '/events/new'
     | '/settings/appearance'
     | '/students/$idSantri'
+    | '/events/'
     | '/settings/'
     | '/store/products/$id'
     | '/store/products/new'
@@ -264,7 +274,6 @@ export interface FileRouteTypes {
     | '/500'
     | '/503'
     | '/admin-users'
-    | '/events'
     | '/students'
     | '/syahriyah'
     | '/'
@@ -273,6 +282,7 @@ export interface FileRouteTypes {
     | '/events/new'
     | '/settings/appearance'
     | '/students/$idSantri'
+    | '/events'
     | '/settings'
     | '/store/products/$id'
     | '/store/products/new'
@@ -298,6 +308,7 @@ export interface FileRouteTypes {
     | '/_authenticated/events/new'
     | '/_authenticated/settings/appearance'
     | '/_authenticated/students/$idSantri'
+    | '/_authenticated/events/'
     | '/_authenticated/settings/'
     | '/_authenticated/store/products/$id'
     | '/_authenticated/store/products/new'
@@ -422,6 +433,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsIndexRouteImport
       parentRoute: typeof AuthenticatedSettingsRouteRoute
     }
+    '/_authenticated/events/': {
+      id: '/_authenticated/events/'
+      path: '/'
+      fullPath: '/events/'
+      preLoaderRoute: typeof AuthenticatedEventsIndexRouteImport
+      parentRoute: typeof AuthenticatedEventsRoute
+    }
     '/_authenticated/students/$idSantri': {
       id: '/_authenticated/students/$idSantri'
       path: '/$idSantri'
@@ -500,11 +518,13 @@ const AuthenticatedSettingsRouteRouteWithChildren =
 interface AuthenticatedEventsRouteChildren {
   AuthenticatedEventsIdRoute: typeof AuthenticatedEventsIdRoute
   AuthenticatedEventsNewRoute: typeof AuthenticatedEventsNewRoute
+  AuthenticatedEventsIndexRoute: typeof AuthenticatedEventsIndexRoute
 }
 
 const AuthenticatedEventsRouteChildren: AuthenticatedEventsRouteChildren = {
   AuthenticatedEventsIdRoute: AuthenticatedEventsIdRoute,
   AuthenticatedEventsNewRoute: AuthenticatedEventsNewRoute,
+  AuthenticatedEventsIndexRoute: AuthenticatedEventsIndexRoute,
 }
 
 const AuthenticatedEventsRouteWithChildren =

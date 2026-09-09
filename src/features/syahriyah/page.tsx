@@ -165,7 +165,7 @@ export function SyahriyahPage() {
           Kelola sync santri, tarif, snapshot, dan pengurus.
         </p>
       </div>
-      <div className='grid gap-6 xl:grid-cols-2'>
+      <div className='grid min-w-0 gap-6 xl:grid-cols-2'>
         <SyncCard
           query={statusQuery}
           mutation={syncMutation}
@@ -243,7 +243,7 @@ function SyncCard({
       }
     | undefined
   return (
-    <Card>
+    <Card className='min-w-0'>
       <CardHeader>
         <CardTitle className='flex items-center gap-2'>
           <Activity />
@@ -308,7 +308,7 @@ function TariffCard({
     amount: number
   }[]
   return (
-    <Card>
+    <Card className='min-w-0'>
       <CardHeader>
         <CardTitle>Tarif Syahriyah</CardTitle>
       </CardHeader>
@@ -366,26 +366,28 @@ function TariffCard({
             {error}
           </p>
         )}
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Periode</TableHead>
-              <TableHead>Kategori</TableHead>
-              <TableHead className='text-end'>Nominal</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {tariffs.map((item) => (
-              <TableRow key={`${item.hijriPeriod}-${item.category}`}>
-                <TableCell>{item.hijriPeriod}</TableCell>
-                <TableCell>{item.category}</TableCell>
-                <TableCell className='text-end'>
-                  Rp {item.amount.toLocaleString('id-ID')}
-                </TableCell>
+        <div className='w-full overflow-x-auto'>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Periode</TableHead>
+                <TableHead>Kategori</TableHead>
+                <TableHead className='text-end'>Nominal</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {tariffs.map((item, index) => (
+                <TableRow key={`${item.hijriPeriod}-${item.category}-${index}`}>
+                  <TableCell>{item.hijriPeriod}</TableCell>
+                  <TableCell>{item.category}</TableCell>
+                  <TableCell className='text-end'>
+                    Rp {item.amount.toLocaleString('id-ID')}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
         {!query.isPending && tariffs.length === 0 && (
           <State
             title='Belum ada tarif'
@@ -417,7 +419,7 @@ function SnapshotCard({
       }
     | undefined
   return (
-    <Card>
+    <Card className='min-w-0'>
       <CardHeader>
         <CardTitle>Monthly snapshot</CardTitle>
       </CardHeader>
@@ -535,7 +537,7 @@ function PengurusCard({
     isActive: boolean
   }[]
   return (
-    <Card>
+    <Card className='min-w-0'>
       <CardHeader>
         <CardTitle>Pengurus</CardTitle>
       </CardHeader>
@@ -598,40 +600,42 @@ function PengurusCard({
             {error}
           </p>
         )}
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Santri</TableHead>
-              <TableHead>Periode</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className='text-end'>Aksi</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {items.map((item) => (
-              <TableRow key={item.id}>
-                <TableCell>{item.idSantri}</TableCell>
-                <TableCell>
-                  {item.startPeriod} — {item.endPeriod ?? 'sekarang'}
-                </TableCell>
-                <TableCell>
-                  <Badge>{item.isActive ? 'Aktif' : 'Selesai'}</Badge>
-                </TableCell>
-                <TableCell className='text-end'>
-                  {item.isActive && (
-                    <Button
-                      variant='outline'
-                      size='sm'
-                      onClick={() => setReleaseTarget(item.idSantri)}
-                    >
-                      Release
-                    </Button>
-                  )}
-                </TableCell>
+        <div className='w-full overflow-x-auto'>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Santri</TableHead>
+                <TableHead>Periode</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className='text-end'>Aksi</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {items.map((item) => (
+                <TableRow key={item.id}>
+                  <TableCell>{item.idSantri}</TableCell>
+                  <TableCell>
+                    {item.startPeriod} — {item.endPeriod ?? 'sekarang'}
+                  </TableCell>
+                  <TableCell>
+                    <Badge>{item.isActive ? 'Aktif' : 'Selesai'}</Badge>
+                  </TableCell>
+                  <TableCell className='text-end'>
+                    {item.isActive && (
+                      <Button
+                        variant='outline'
+                        size='sm'
+                        onClick={() => setReleaseTarget(item.idSantri)}
+                      >
+                        Release
+                      </Button>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
         {!query.isPending && items.length === 0 && (
           <State
             title='Belum ada pengurus aktif'

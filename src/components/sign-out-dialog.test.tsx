@@ -8,11 +8,12 @@ const reset = vi.fn()
 
 const MOCK_HREF = 'https://app.test/dashboard?tab=1'
 
-vi.mock('@/stores/auth-store', () => ({
-  useAuthStore: () => ({
-    auth: { reset },
-  }),
-}))
+vi.mock('@/stores/auth-store', () => {
+  const useAuthStore = Object.assign(vi.fn(), {
+    getState: () => ({ auth: { reset } }),
+  })
+  return { useAuthStore }
+})
 
 vi.mock('@tanstack/react-router', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@tanstack/react-router')>()

@@ -70,7 +70,7 @@ describe('handleServerError', () => {
     handleServerError(err)
 
     expect(log).toHaveBeenCalledTimes(1)
-    expect(log).toHaveBeenCalledWith(err)
+    expect(log).toHaveBeenCalledWith({ name: 'Error', message: 'logged' })
 
     log.mockRestore()
   })

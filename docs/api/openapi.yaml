@@ -1832,6 +1832,7 @@ paths:
       tags:
         - Internal Admin
       summary: List calendar events for internal administration
+      description: Requires events.manage or events.publish.
       security:
         - bearerAdminAuth: []
       parameters:
@@ -1857,6 +1858,7 @@ paths:
       tags:
         - Internal Admin
       summary: Create a calendar event
+      description: Requires events.manage.
       security:
         - bearerAdminAuth: []
       requestBody:
@@ -1885,6 +1887,7 @@ paths:
       tags:
         - Internal Admin
       summary: Get a calendar event by UUID
+      description: Requires events.manage or events.publish.
       security:
         - bearerAdminAuth: []
       parameters:
@@ -1913,6 +1916,7 @@ paths:
       tags:
         - Internal Admin
       summary: Update a calendar event
+      description: Requires events.manage for detail changes; events.publish may only change status between DRAFT and PUBLISHED.
       security:
         - bearerAdminAuth: []
       parameters:
@@ -1949,6 +1953,7 @@ paths:
       tags:
         - Internal Admin
       summary: Archive a calendar event
+      description: Requires events.manage.
       security:
         - bearerAdminAuth: []
       parameters:
@@ -2848,22 +2853,22 @@ components:
     AdminStudent:
       type: object
       properties:
-        idSantri:
+        IDSantri:
           type: string
-        nis:
+        NIS:
           type: string
-        nama:
+        Nama:
           type: string
-        alamat:
+        Alamat:
           type: string
-        status:
+        Status:
           type: string
       required:
-        - idSantri
-        - nis
-        - nama
-        - alamat
-        - status
+        - IDSantri
+        - NIS
+        - Nama
+        - Alamat
+        - Status
     AdminStoreProduct:
       type: object
       properties:

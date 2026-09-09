@@ -7,14 +7,10 @@ export default defineConfig({
   },
   test: {
     environment: 'node',
-    include: [
-      'src/api/**/*.test.ts',
-      'src/features/auth/auth-session.test.ts',
-      'src/features/admin-users/**/*.test.ts',
-      'src/features/students/**/*.test.ts',
-      'src/features/syahriyah/**/*.test.ts',
-      'src/features/store/**/*.test.ts',
-      'src/features/calendar-events/**/*.test.ts',
+    include: ['src/**/*.test.ts'],
+    exclude: [
+      'src/hooks/use-table-url-state.test.ts',
+      'src/lib/cookies.test.ts',
     ],
   },
 })

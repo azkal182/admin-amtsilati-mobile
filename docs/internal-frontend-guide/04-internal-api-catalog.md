@@ -37,6 +37,8 @@ Katalog akses:
 | GET | `/internal/admin/students` | `page`, `limit`, `search`, `status` |
 | GET | `/internal/admin/students/{idSantri}` | - |
 
+Response `AdminStudent` menggunakan casing legacy (`IDSantri`, `NIS`, `Nama`, `Alamat`, `Status`) dan mengikuti schema OpenAPI yang sama. Jangan mengasumsikan field lower camel case pada endpoint admin student.
+
 ## 4. Syahriyah — `syahriyah.manage`
 
 | Method | Path | Query/body |
@@ -44,7 +46,7 @@ Katalog akses:
 | POST | `/internal/admin/syahriyah/sync/students` | trigger async |
 | GET | `/internal/admin/syahriyah/sync/students/status` | - |
 | GET | `/internal/admin/syahriyah/tariffs` | `hijriPeriod`, `limit` |
-| POST | `/internal/admin/syahriyah/tariffs` | `UpsertTariffRequest` |
+| POST | `/internal/admin/syahriyah/tariffs` | `UpsertTariffRequest`; idempotent berdasarkan `hijriPeriod` + `category` |
 | POST | `/internal/admin/syahriyah/snapshots/rebuild` | `SnapshotRebuildRequest` |
 | GET | `/internal/admin/syahriyah/snapshots` | required `hijriPeriod` |
 | GET | `/internal/admin/syahriyah/pengurus` | `idSantri`, `activeOnly`, `limit` |
@@ -67,12 +69,12 @@ Katalog akses:
 |---|---|---|
 | GET | `/calendar/events` | `scope`, `category`, `fromGregorian`, `toGregorian`, `fromHijriYear`, `toHijriYear`, `includeRecurring` |
 | GET | `/internal/admin/events` | `page`, `limit`, `scope`, `category`, `status` |
-| POST | `/internal/admin/events` | `CalendarEventRequest` |
-| GET | `/internal/admin/events/{id}` | UUID |
-| PATCH | `/internal/admin/events/{id}` | `CalendarEventPatchRequest`, UUID |
-| DELETE | `/internal/admin/events/{id}` | UUID; soft archive |
+| POST | `/internal/admin/events` | `CalendarEventRequest`; `events.manage` |
+| GET | `/internal/admin/events/{id}` | UUID; `events.manage` atau `events.publish` |
+| PATCH | `/internal/admin/events/{id}` | `CalendarEventPatchRequest`, UUID; detail `events.manage`, status `DRAFT/PUBLISHED` `events.publish` |
+| DELETE | `/internal/admin/events/{id}` | UUID; soft archive; `events.manage` |
 
-Event admin menggunakan permission `events.manage`; perubahan status ke/dari `PUBLISHED` juga membutuhkan `events.publish`. Setiap mutasi diaudit. Public response menggunakan `data.items`, `data.count`, dataset `version`, serta dapat mengembalikan `304 Not Modified` dengan ETag.
+Event admin menggunakan permission `events.manage` untuk operasi detail dan `events.publish` untuk publish/unpublish. Setiap mutasi diaudit. Public response menggunakan `data.items`, `data.count`, dataset `version`, serta dapat mengembalikan `304 Not Modified` dengan ETag.
 
 Seed awal migration `000011_calendar_events_seed` menyediakan 21 event nasional: 10 event Masehi Indonesia dan 11 hari penting Islam berbasis Hijriah. Seed dapat dijalankan ulang dengan aman melalui `migrate up`.
 

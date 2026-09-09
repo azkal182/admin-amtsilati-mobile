@@ -59,13 +59,15 @@ type AdminUser = {
 
 ```ts
 type Student = {
-  idSantri: string;
-  nis: string;
-  nama: string;
-  alamat: string;
-  status: string;
+  IDSantri: string;
+  NIS: string;
+  Nama: string;
+  Alamat: string;
+  Status: string;
 };
 ```
+
+Field Student snapshot sengaja menggunakan casing legacy karena merupakan kontrak runtime yang dipertahankan. Jangan mengubahnya menjadi lower camel case pada adapter API.
 
 ### Store product
 
@@ -95,6 +97,7 @@ type Tariff = {
 ```
 
 Nominal integer adalah IDR unit terkecil yang dikirim API. Format tampilan dilakukan frontend.
+Kombinasi `hijriPeriod` dan `category` adalah unique key; request upsert berulang memperbarui row yang sama dan tidak membuat duplicate.
 
 ## 4. Flow store upload
 
@@ -139,7 +142,7 @@ Untuk create/update/patch/release/assign:
 
 ## 8. Calendar event flow
 
-Admin menggunakan `/internal/admin/events` untuk membuat dan mengelola event. `GET /internal/admin/events/{id}` mengambil detail berdasarkan UUID. `PATCH` bersifat partial: field yang tidak dikirim dipertahankan. `DELETE` tidak menghapus fisik data, tetapi mengubah status menjadi `ARCHIVED`. Field `status` dapat berupa `DRAFT`, `PUBLISHED`, atau `ARCHIVED`; hanya `PUBLISHED` yang dikirim endpoint `/calendar/events`. Status `PUBLISHED` membutuhkan permission `events.publish`.
+Admin menggunakan `/internal/admin/events` untuk membuat dan mengelola event. `GET /internal/admin/events/{id}` mengambil detail berdasarkan UUID dan dapat digunakan oleh `events.manage` atau `events.publish`. `PATCH` bersifat partial: field yang tidak dikirim dipertahankan. `events.publish` hanya boleh mengubah status `DRAFT` atau `PUBLISHED`; perubahan detail dan archive memerlukan `events.manage`. `DELETE` tidak menghapus fisik data, tetapi mengubah status menjadi `ARCHIVED`. Hanya `PUBLISHED` yang dikirim endpoint `/calendar/events`.
 
 `scope` saat ini hanya `NATIONAL` dan `PESANTREN`. `id` event adalah UUID dan `code` harus unik.
 
