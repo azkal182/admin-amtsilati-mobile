@@ -1,13 +1,8 @@
-export function getUserInitials(name: string) {
-  const initials = name
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? '')
-    .join('')
+import { getDisplayNameInitials } from '@/lib/utils'
 
-  return initials || 'AD'
+export function getUserInitials(name: string) {
+  const initials = getDisplayNameInitials(name)
+  return initials === '?' ? 'AD' : initials
 }
 
 export function getUserContactLabel(username: string) {
