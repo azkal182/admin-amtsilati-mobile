@@ -1,162 +1,102 @@
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
-import { ChevronDownIcon } from '@radix-ui/react-icons'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { fonts } from '@/config/fonts'
-import { showSubmittedData } from '@/lib/show-submitted-data'
-import { cn } from '@/lib/utils'
+import { Moon, Monitor, Sun } from 'lucide-react'
 import { useFont } from '@/context/font-provider'
-import { useTheme } from '@/context/theme-provider'
-import { Button, buttonVariants } from '@/components/ui/button'
+import { useTheme, type Theme } from '@/context/theme-provider'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Label } from '@/components/ui/label'
 import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
-const appearanceFormSchema = z.object({
-  theme: z.enum(['light', 'dark']),
-  font: z.enum(fonts),
-})
-
-type AppearanceFormValues = z.infer<typeof appearanceFormSchema>
+const themeOptions: {
+  value: Theme
+  label: string
+  description: string
+  icon: typeof Sun
+}[] = [
+  {
+    value: 'light',
+    label: 'Terang',
+    description: 'Gunakan tema terang',
+    icon: Sun,
+  },
+  {
+    value: 'dark',
+    label: 'Gelap',
+    description: 'Gunakan tema gelap',
+    icon: Moon,
+  },
+  {
+    value: 'system',
+    label: 'Sistem',
+    description: 'Ikuti preferensi perangkat',
+    icon: Monitor,
+  },
+]
 
 export function AppearanceForm() {
   const { font, setFont } = useFont()
   const { theme, setTheme } = useTheme()
 
-  // This can come from your database or API.
-  const defaultValues: Partial<AppearanceFormValues> = {
-    theme: theme as 'light' | 'dark',
-    font,
-  }
-
-  const form = useForm<AppearanceFormValues>({
-    resolver: zodResolver(appearanceFormSchema),
-    defaultValues,
-  })
-
-  function onSubmit(data: AppearanceFormValues) {
-    if (data.font != font) setFont(data.font)
-    if (data.theme != theme) setTheme(data.theme)
-
-    showSubmittedData(data)
-  }
-
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
-        <FormField
-          control={form.control}
-          name='font'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Font</FormLabel>
-              <div className='relative w-max'>
-                <FormControl>
-                  <select
-                    className={cn(
-                      buttonVariants({ variant: 'outline' }),
-                      'w-50 appearance-none font-normal capitalize',
-                      'dark:bg-background dark:hover:bg-background'
-                    )}
-                    {...field}
-                  >
-                    {fonts.map((font) => (
-                      <option key={font} value={font}>
-                        {font}
-                      </option>
-                    ))}
-                  </select>
-                </FormControl>
-                <ChevronDownIcon className='absolute inset-e-3 top-2.5 h-4 w-4 opacity-50' />
-              </div>
-              <FormDescription className='font-manrope'>
-                Set the font you want to use in the dashboard.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name='theme'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Theme</FormLabel>
-              <FormDescription>
-                Select the theme for the dashboard.
-              </FormDescription>
-              <FormMessage />
-              <RadioGroup
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-                className='grid max-w-md grid-cols-2 gap-8 pt-2'
-              >
-                <FormItem>
-                  <FormLabel className='[&:has([data-state=checked])>div]:border-primary'>
-                    <FormControl>
-                      <RadioGroupItem value='light' className='sr-only' />
-                    </FormControl>
-                    <div className='items-center rounded-md border-2 border-muted p-1 hover:border-accent'>
-                      <div className='space-y-2 rounded-sm bg-[#ecedef] p-2'>
-                        <div className='space-y-2 rounded-md bg-white p-2 shadow-xs'>
-                          <div className='h-2 w-20 rounded-lg bg-[#ecedef]' />
-                          <div className='h-2 w-25 rounded-lg bg-[#ecedef]' />
-                        </div>
-                        <div className='flex items-center space-x-2 rounded-md bg-white p-2 shadow-xs'>
-                          <div className='h-4 w-4 rounded-full bg-[#ecedef]' />
-                          <div className='h-2 w-25 rounded-lg bg-[#ecedef]' />
-                        </div>
-                        <div className='flex items-center space-x-2 rounded-md bg-white p-2 shadow-xs'>
-                          <div className='h-4 w-4 rounded-full bg-[#ecedef]' />
-                          <div className='h-2 w-25 rounded-lg bg-[#ecedef]' />
-                        </div>
-                      </div>
-                    </div>
-                    <span className='block w-full p-2 text-center font-normal'>
-                      Light
-                    </span>
-                  </FormLabel>
-                </FormItem>
-                <FormItem>
-                  <FormLabel className='[&:has([data-state=checked])>div]:border-primary'>
-                    <FormControl>
-                      <RadioGroupItem value='dark' className='sr-only' />
-                    </FormControl>
-                    <div className='items-center rounded-md border-2 border-muted bg-popover p-1 hover:bg-accent hover:text-accent-foreground'>
-                      <div className='space-y-2 rounded-sm bg-slate-950 p-2'>
-                        <div className='space-y-2 rounded-md bg-slate-800 p-2 shadow-xs'>
-                          <div className='h-2 w-20 rounded-lg bg-slate-400' />
-                          <div className='h-2 w-25 rounded-lg bg-slate-400' />
-                        </div>
-                        <div className='flex items-center space-x-2 rounded-md bg-slate-800 p-2 shadow-xs'>
-                          <div className='h-4 w-4 rounded-full bg-slate-400' />
-                          <div className='h-2 w-25 rounded-lg bg-slate-400' />
-                        </div>
-                        <div className='flex items-center space-x-2 rounded-md bg-slate-800 p-2 shadow-xs'>
-                          <div className='h-4 w-4 rounded-full bg-slate-400' />
-                          <div className='h-2 w-25 rounded-lg bg-slate-400' />
-                        </div>
-                      </div>
-                    </div>
-                    <span className='block w-full p-2 text-center font-normal'>
-                      Dark
-                    </span>
-                  </FormLabel>
-                </FormItem>
-              </RadioGroup>
-            </FormItem>
-          )}
-        />
+    <div className='space-y-6'>
+      <Card>
+        <CardHeader>
+          <CardTitle className='text-base'>Tema panel</CardTitle>
+        </CardHeader>
+        <CardContent className='grid gap-3 sm:grid-cols-3'>
+          {themeOptions.map(({ value, label, description, icon: Icon }) => (
+            <button
+              key={value}
+              type='button'
+              aria-pressed={theme === value}
+              onClick={() => setTheme(value)}
+              className={`flex items-start gap-3 rounded-xl border p-4 text-start transition-colors focus-visible:ring-2 focus-visible:ring-ring ${theme === value ? 'border-primary bg-primary/5' : 'hover:bg-muted'}`}
+            >
+              <Icon className='mt-0.5 size-5 text-primary' aria-hidden='true' />
+              <span className='space-y-1'>
+                <span className='block font-medium'>{label}</span>
+                <span className='block text-xs text-muted-foreground'>
+                  {description}
+                </span>
+              </span>
+            </button>
+          ))}
+        </CardContent>
+      </Card>
 
-        <Button type='submit'>Update preferences</Button>
-      </form>
-    </Form>
+      <Card>
+        <CardHeader>
+          <CardTitle className='text-base'>Tipografi</CardTitle>
+        </CardHeader>
+        <CardContent className='space-y-3'>
+          <div className='space-y-2'>
+            <Label htmlFor='appearance-font'>Font utama</Label>
+            <Select
+              value={font}
+              onValueChange={(value) => setFont(value as typeof font)}
+            >
+              <SelectTrigger id='appearance-font' className='w-full sm:w-64'>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {fonts.map((fontOption) => (
+                  <SelectItem key={fontOption} value={fontOption}>
+                    <span className='capitalize'>{fontOption}</span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className='text-sm text-muted-foreground'>
+              Perubahan tersimpan otomatis di perangkat ini.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   )
 }

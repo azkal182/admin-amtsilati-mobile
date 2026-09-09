@@ -31,7 +31,7 @@ export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
 
   return (
     <>
-      <div className='p-1 md:hidden'>
+      <div className='md:hidden'>
         <Select value={val} onValueChange={handleSelect}>
           <SelectTrigger className='h-12 sm:w-48'>
             <SelectValue placeholder='Theme' />
@@ -56,7 +56,7 @@ export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
       >
         <nav
           className={cn(
-            'flex space-x-2 py-1 lg:flex-col lg:space-y-1 lg:space-x-0',
+            'flex gap-2 overflow-x-auto rounded-xl border bg-card p-1 lg:flex-col lg:gap-1 lg:overflow-visible lg:border-0 lg:bg-transparent lg:p-0',
             className
           )}
           {...props}
@@ -68,9 +68,9 @@ export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
               className={cn(
                 buttonVariants({ variant: 'ghost' }),
                 pathname === item.href
-                  ? 'bg-muted hover:bg-accent'
-                  : 'hover:bg-accent hover:underline',
-                'justify-start'
+                  ? 'bg-primary/10 text-primary hover:bg-primary/15'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                'justify-start whitespace-nowrap lg:w-full'
               )}
             >
               <span className='me-2'>{item.icon}</span>
