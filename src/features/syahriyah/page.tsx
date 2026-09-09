@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Activity, RefreshCw } from 'lucide-react'
+import {
+  Activity,
+  Calculator,
+  ClipboardList,
+  RefreshCw,
+  Users,
+} from 'lucide-react'
 import { toast } from 'sonner'
 import { ApiRequestError, type ApiEnvelope } from '@/api/types'
 import { handleServerError } from '@/lib/handle-server-error'
@@ -18,6 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
@@ -157,50 +164,127 @@ export function SyahriyahPage() {
     )
   return (
     <Layout>
-      <div className='mb-6'>
-        <h1 className='text-2xl font-bold tracking-tight'>
-          Syahriyah Operations
-        </h1>
-        <p className='text-muted-foreground'>
-          Kelola sync santri, tarif, snapshot, dan pengurus.
-        </p>
+      <div className='mb-8 flex flex-wrap items-end justify-between gap-4'>
+        <div className='space-y-2'>
+          <p className='text-sm font-medium text-primary'>
+            Operasional keuangan
+          </p>
+          <h1 className='text-3xl font-semibold tracking-tight'>Syahriyah</h1>
+          <p className='max-w-2xl text-muted-foreground'>
+            Kelola sinkronisasi santri, tarif, snapshot pembayaran, dan pengurus
+            dari satu workspace.
+          </p>
+        </div>
+        <Badge variant='outline' className='gap-1.5 py-1.5'>
+          <span
+            className='size-2 rounded-full bg-emerald-500'
+            aria-hidden='true'
+          />
+          Operasional aktif
+        </Badge>
       </div>
-      <div className='grid min-w-0 gap-6 xl:grid-cols-2'>
-        <SyncCard
-          query={statusQuery}
-          mutation={syncMutation}
-          timedOut={syncTimedOut}
-          polling={
-            syncPolling &&
-            !syncTimedOut &&
-            statusQuery.data?.data.status !== 'success' &&
-            statusQuery.data?.data.status !== 'failed'
-          }
+      <div className='mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4'>
+        <SummaryCard
+          icon={Activity}
+          label='Student sync'
+          value={statusQuery.data?.data.status ?? 'Memuat...'}
         />
-        <TariffCard
-          query={tariffsQuery}
-          period={tariffPeriod}
-          setPeriod={setTariffPeriod}
-          mutation={tariffMutation}
+        <SummaryCard
+          icon={Calculator}
+          label='Tarif'
+          value={`${tariffsQuery.data?.data.length ?? 0} kategori`}
         />
-        <SnapshotCard
-          query={snapshotQuery}
-          period={period}
-          setPeriod={setPeriod}
-          mutation={snapshotMutation}
-        />
-        <PengurusCard
-          query={pengurusQuery}
-          students={studentsQuery.data?.data ?? []}
-          studentId={studentId}
-          setStudentId={setStudentId}
-          assignMutation={assignMutation}
-          releaseTarget={releaseTarget}
-          setReleaseTarget={setReleaseTarget}
-          releaseMutation={releaseMutation}
+        <SummaryCard icon={ClipboardList} label='Snapshot' value={period} />
+        <SummaryCard
+          icon={Users}
+          label='Pengurus aktif'
+          value={`${pengurusQuery.data?.data.filter((item) => item.isActive).length ?? 0} assignment`}
         />
       </div>
+      <Tabs defaultValue='sync' className='min-w-0'>
+        <TabsList className='mb-4 grid h-auto w-full grid-cols-2 gap-1 sm:grid-cols-4'>
+          <TabsTrigger value='sync'>
+            <Activity />
+            Sync santri
+          </TabsTrigger>
+          <TabsTrigger value='tariffs'>
+            <Calculator />
+            Tarif
+          </TabsTrigger>
+          <TabsTrigger value='snapshot'>
+            <ClipboardList />
+            Snapshot
+          </TabsTrigger>
+          <TabsTrigger value='pengurus'>
+            <Users />
+            Pengurus
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value='sync'>
+          <SyncCard
+            query={statusQuery}
+            mutation={syncMutation}
+            timedOut={syncTimedOut}
+            polling={
+              syncPolling &&
+              !syncTimedOut &&
+              statusQuery.data?.data.status !== 'success' &&
+              statusQuery.data?.data.status !== 'failed'
+            }
+          />
+        </TabsContent>
+        <TabsContent value='tariffs'>
+          <TariffCard
+            query={tariffsQuery}
+            period={tariffPeriod}
+            setPeriod={setTariffPeriod}
+            mutation={tariffMutation}
+          />
+        </TabsContent>
+        <TabsContent value='snapshot'>
+          <SnapshotCard
+            query={snapshotQuery}
+            period={period}
+            setPeriod={setPeriod}
+            mutation={snapshotMutation}
+          />
+        </TabsContent>
+        <TabsContent value='pengurus'>
+          <PengurusCard
+            query={pengurusQuery}
+            students={studentsQuery.data?.data ?? []}
+            studentId={studentId}
+            setStudentId={setStudentId}
+            assignMutation={assignMutation}
+            releaseTarget={releaseTarget}
+            setReleaseTarget={setReleaseTarget}
+            releaseMutation={releaseMutation}
+          />
+        </TabsContent>
+      </Tabs>
     </Layout>
+  )
+}
+
+function SummaryCard({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: typeof Activity
+  label: string
+  value: string
+}) {
+  return (
+    <div className='flex items-center gap-3 rounded-xl border bg-card p-4'>
+      <div className='flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary'>
+        <Icon className='size-4' aria-hidden='true' />
+      </div>
+      <div className='min-w-0'>
+        <p className='truncate text-xs text-muted-foreground'>{label}</p>
+        <p className='truncate text-sm font-semibold capitalize'>{value}</p>
+      </div>
+    </div>
   )
 }
 
