@@ -35,17 +35,17 @@ Lulus jika project hanya menyisakan fondasi UI dan route skeleton Amtsilati, tan
 
 ### Checklist
 
-- [ ] Base URL tidak hardcode.
-- [ ] Admin client terpisah dari auth client.
-- [ ] Request protected memiliki bearer admin token.
-- [ ] Response pagination dan non-pagination dapat diparse.
-- [ ] Error menyimpan `requestId`.
-- [ ] Sidebar tidak menampilkan endpoint client/user.
-- [ ] Loading, empty, error, dan forbidden primitives tersedia.
+- [x] Base URL terpusat pada config environment; tidak di-hardcode pada feature.
+- [x] Admin client terpisah dari auth client.
+- [x] Request protected memiliki bearer admin token.
+- [x] Response pagination dan non-pagination dapat diparse.
+- [x] Error menyimpan `requestId`.
+- [x] Sidebar tidak menampilkan endpoint client/user.
+- [x] Loading, empty, error, dan forbidden primitives tersedia.
 
 ### Gate 1
 
-Lulus jika seluruh route skeleton dapat dirender, API layer teruji secara unit, dan tidak ada boundary admin/user yang tercampur.
+Lulus jika seluruh route skeleton dapat dirender, API layer teruji secara unit, dan tidak ada boundary admin/user yang tercampur. Gate ini lulus pada 2026-09-09 berdasarkan `bun run test:unit` (12 test pass), `bun run lint`, `bun run format:check`, dan `bun run build`. Browser smoke test belum dapat dijalankan karena runtime Chromium Playwright dan port browser tidak tersedia di environment; akan diulang pada fase quality/release.
 
 ## Fase 2 — Admin authentication dan session lifecycle
 

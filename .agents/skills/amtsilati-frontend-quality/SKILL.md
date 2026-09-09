@@ -14,7 +14,7 @@ Use this skill after implementing a feature, when reviewing a phase gate, or whe
 
 ## Verification checklist
 
-- Run `pnpm run lint` and `pnpm run build` for source changes.
+- Run `bun run lint` and `bun run build` for source changes.
 - Run targeted tests for changed API, auth, form, route, polling, upload, and permission behavior.
 - Check loading, empty, success, validation, forbidden, not-found, conflict, network, and server-error states.
 - Check keyboard navigation, focus visibility, labels, table semantics, contrast, and responsive layouts.

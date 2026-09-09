@@ -1,10 +1,20 @@
 import { AxiosError } from 'axios'
 import { toast } from 'sonner'
+import { ApiRequestError } from '@/api/types'
 
 export function handleServerError(error: unknown) {
   if (import.meta.env.DEV) {
     // eslint-disable-next-line no-console
-    console.log(error)
+    console.log(
+      error instanceof ApiRequestError
+        ? {
+            name: error.name,
+            status: error.status,
+            code: error.code,
+            requestId: error.requestId,
+          }
+        : error
+    )
   }
 
   let errMsg = 'Something went wrong!'
@@ -23,6 +33,10 @@ export function handleServerError(error: unknown) {
     if (typeof title === 'string' && title.length > 0) {
       errMsg = title
     }
+  }
+
+  if (error instanceof ApiRequestError) {
+    errMsg = error.message
   }
 
   toast.error(errMsg)

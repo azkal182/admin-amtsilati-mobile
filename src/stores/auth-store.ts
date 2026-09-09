@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { getCookie, setCookie, removeCookie } from '@/lib/cookies'
 
-const ACCESS_TOKEN = 'thisisjustarandomstring'
+const ACCESS_TOKEN = 'amtsilati_admin_access_token'
 
 interface AuthUser {
   accountNo: string
@@ -23,7 +23,15 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>()((set) => {
   const cookieState = getCookie(ACCESS_TOKEN)
-  const initToken = cookieState ? JSON.parse(cookieState) : ''
+  let initToken = ''
+  if (cookieState) {
+    try {
+      const parsed = JSON.parse(cookieState)
+      if (typeof parsed === 'string') initToken = parsed
+    } catch {
+      removeCookie(ACCESS_TOKEN)
+    }
+  }
   return {
     auth: {
       user: null,
