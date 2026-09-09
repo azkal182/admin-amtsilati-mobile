@@ -7,6 +7,11 @@ export default defineConfig({
   },
   test: {
     environment: 'node',
-    include: ['src/api/**/*.test.ts', 'src/features/auth/auth-session.test.ts'],
+    include: [
+      'src/api/**/*.test.ts',
+      'src/features/auth/auth-session.test.ts',
+      'src/features/admin-users/**/*.test.ts',
+      'src/features/students/**/*.test.ts',
+    ],
   },
 })

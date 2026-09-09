@@ -83,18 +83,18 @@ Lulus jika login, protected route, refresh, logout, 401, 403, dan session expire
 
 ### Checklist
 
-- [ ] Data memakai endpoint admin yang benar.
-- [ ] Pagination server-side.
-- [ ] Search/filter tersimpan di URL.
-- [ ] Form mengikuti schema OpenAPI.
-- [ ] Password tidak pernah ditampilkan kembali.
-- [ ] Student detail bersifat read-only.
-- [ ] 403 membedakan forbidden dari empty.
-- [ ] Mutasi melakukan invalidation query.
+- [x] Data memakai endpoint admin yang benar.
+- [x] Pagination server-side.
+- [x] Search/filter tersimpan di URL.
+- [x] Form mengikuti schema OpenAPI.
+- [x] Password tidak pernah ditampilkan kembali.
+- [x] Student detail bersifat read-only.
+- [x] 403 membedakan forbidden dari empty.
+- [x] Mutasi melakukan invalidation query.
 
 ### Gate 3
 
-Lulus jika semua CRUD admin user yang tersedia dan read-only student flow berjalan terhadap API/dev mock, dengan validasi dan error state lengkap.
+Lulus jika semua CRUD admin user yang tersedia dan read-only student flow berjalan terhadap API/dev mock, dengan validasi dan error state lengkap. Implementasi Fase 3 selesai pada 2026-09-09: endpoint Admin Users dan Students terpetakan ke admin client, form tervalidasi, query state tersimpan di URL, mutation meng-invalidate list, dan Students memiliki adapter untuk respons backend aktual yang masih menggunakan field `IDSantri`, `NIS`, `Nama`, `Alamat`, `Status` alih-alih casing OpenAPI. Unit suite (23 test), lint, format check, dan build berhasil. Smoke backend untuk list Admin Users, list Students, dan detail Students menghasilkan `200`; smoke browser memverifikasi list Admin Users serta filter Students. Gate 3 masih memerlukan verifikasi mutation create/edit/password terhadap environment dev setelah contract casing Students diselaraskan atau mismatch adapter disetujui.
 
 ## Fase 4 — Syahriyah Operations
 

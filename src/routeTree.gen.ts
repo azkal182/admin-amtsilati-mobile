@@ -24,6 +24,7 @@ import { Route as authSignInRouteImport } from './routes/(auth)/sign-in'
 import { Route as authSessionExpiredRouteImport } from './routes/(auth)/session-expired'
 import { Route as AuthenticatedSettingsRouteRouteImport } from './routes/_authenticated/settings/route'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
+import { Route as AuthenticatedStudentsIdSantriRouteImport } from './routes/_authenticated/students/$idSantri'
 import { Route as AuthenticatedSettingsAppearanceRouteImport } from './routes/_authenticated/settings/appearance'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
 import { Route as AuthenticatedStoreProductsIndexRouteImport } from './routes/_authenticated/store/products/index'
@@ -104,6 +105,12 @@ const AuthenticatedSettingsIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedSettingsRouteRoute,
   } as any)
+const AuthenticatedStudentsIdSantriRoute =
+  AuthenticatedStudentsIdSantriRouteImport.update({
+    id: '/$idSantri',
+    path: '/$idSantri',
+    getParentRoute: () => AuthenticatedStudentsRoute,
+  } as any)
 const AuthenticatedSettingsAppearanceRoute =
   AuthenticatedSettingsAppearanceRouteImport.update({
     id: '/appearance',
@@ -135,10 +142,11 @@ export interface FileRoutesByFullPath {
   '/503': typeof errors503Route
   '/admin-users': typeof AuthenticatedAdminUsersRoute
   '/events': typeof AuthenticatedEventsRoute
-  '/students': typeof AuthenticatedStudentsRoute
+  '/students': typeof AuthenticatedStudentsRouteWithChildren
   '/syahriyah': typeof AuthenticatedSyahriyahRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
+  '/students/$idSantri': typeof AuthenticatedStudentsIdSantriRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
   '/store/products/': typeof AuthenticatedStoreProductsIndexRoute
 }
@@ -152,11 +160,12 @@ export interface FileRoutesByTo {
   '/503': typeof errors503Route
   '/admin-users': typeof AuthenticatedAdminUsersRoute
   '/events': typeof AuthenticatedEventsRoute
-  '/students': typeof AuthenticatedStudentsRoute
+  '/students': typeof AuthenticatedStudentsRouteWithChildren
   '/syahriyah': typeof AuthenticatedSyahriyahRoute
   '/': typeof AuthenticatedIndexRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
+  '/students/$idSantri': typeof AuthenticatedStudentsIdSantriRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/store/products': typeof AuthenticatedStoreProductsIndexRoute
 }
@@ -173,11 +182,12 @@ export interface FileRoutesById {
   '/(errors)/503': typeof errors503Route
   '/_authenticated/admin-users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/events': typeof AuthenticatedEventsRoute
-  '/_authenticated/students': typeof AuthenticatedStudentsRoute
+  '/_authenticated/students': typeof AuthenticatedStudentsRouteWithChildren
   '/_authenticated/syahriyah': typeof AuthenticatedSyahriyahRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
+  '/_authenticated/students/$idSantri': typeof AuthenticatedStudentsIdSantriRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/_authenticated/store/products/': typeof AuthenticatedStoreProductsIndexRoute
 }
@@ -199,6 +209,7 @@ export interface FileRouteTypes {
     | '/syahriyah'
     | '/errors/$error'
     | '/settings/appearance'
+    | '/students/$idSantri'
     | '/settings/'
     | '/store/products/'
   fileRoutesByTo: FileRoutesByTo
@@ -217,6 +228,7 @@ export interface FileRouteTypes {
     | '/'
     | '/errors/$error'
     | '/settings/appearance'
+    | '/students/$idSantri'
     | '/settings'
     | '/store/products'
   id:
@@ -237,6 +249,7 @@ export interface FileRouteTypes {
     | '/_authenticated/'
     | '/_authenticated/errors/$error'
     | '/_authenticated/settings/appearance'
+    | '/_authenticated/students/$idSantri'
     | '/_authenticated/settings/'
     | '/_authenticated/store/products/'
   fileRoutesById: FileRoutesById
@@ -359,6 +372,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsIndexRouteImport
       parentRoute: typeof AuthenticatedSettingsRouteRoute
     }
+    '/_authenticated/students/$idSantri': {
+      id: '/_authenticated/students/$idSantri'
+      path: '/$idSantri'
+      fullPath: '/students/$idSantri'
+      preLoaderRoute: typeof AuthenticatedStudentsIdSantriRouteImport
+      parentRoute: typeof AuthenticatedStudentsRoute
+    }
     '/_authenticated/settings/appearance': {
       id: '/_authenticated/settings/appearance'
       path: '/appearance'
@@ -399,11 +419,24 @@ const AuthenticatedSettingsRouteRouteWithChildren =
     AuthenticatedSettingsRouteRouteChildren,
   )
 
+interface AuthenticatedStudentsRouteChildren {
+  AuthenticatedStudentsIdSantriRoute: typeof AuthenticatedStudentsIdSantriRoute
+}
+
+const AuthenticatedStudentsRouteChildren: AuthenticatedStudentsRouteChildren = {
+  AuthenticatedStudentsIdSantriRoute: AuthenticatedStudentsIdSantriRoute,
+}
+
+const AuthenticatedStudentsRouteWithChildren =
+  AuthenticatedStudentsRoute._addFileChildren(
+    AuthenticatedStudentsRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsRouteRoute: typeof AuthenticatedSettingsRouteRouteWithChildren
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedEventsRoute: typeof AuthenticatedEventsRoute
-  AuthenticatedStudentsRoute: typeof AuthenticatedStudentsRoute
+  AuthenticatedStudentsRoute: typeof AuthenticatedStudentsRouteWithChildren
   AuthenticatedSyahriyahRoute: typeof AuthenticatedSyahriyahRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedErrorsErrorRoute: typeof AuthenticatedErrorsErrorRoute
@@ -414,7 +447,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsRouteRoute: AuthenticatedSettingsRouteRouteWithChildren,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedEventsRoute: AuthenticatedEventsRoute,
-  AuthenticatedStudentsRoute: AuthenticatedStudentsRoute,
+  AuthenticatedStudentsRoute: AuthenticatedStudentsRouteWithChildren,
   AuthenticatedSyahriyahRoute: AuthenticatedSyahriyahRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedErrorsErrorRoute: AuthenticatedErrorsErrorRoute,

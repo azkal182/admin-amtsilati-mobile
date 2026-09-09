@@ -27,7 +27,7 @@ Dokumentasi ini adalah rencana kerja utama untuk membangun panel admin Amtsilati
 - [x] Fase 0 — Audit dan cleanup template
 - [x] Fase 1 — Foundation, API client, dan application shell
 - [x] Fase 2 — Admin authentication dan session lifecycle
-- [ ] Fase 3 — Admin Users dan Students
+- [ ] Fase 3 — Admin Users dan Students (implementasi selesai; Gate 3 pending)
 - [ ] Fase 4 — Syahriyah Operations
 - [ ] Fase 5 — Store Management
 - [ ] Fase 6 — Calendar Events

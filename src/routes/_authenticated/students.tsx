@@ -1,11 +1,13 @@
+import { z } from 'zod'
 import { createFileRoute } from '@tanstack/react-router'
-import { ModulePlaceholder } from '@/components/module-placeholder'
+import { StudentsPage } from '@/features/students'
 
 export const Route = createFileRoute('/_authenticated/students')({
-  component: () => (
-    <ModulePlaceholder
-      title='Students'
-      description='Lihat snapshot data santri secara read-only.'
-    />
-  ),
+  validateSearch: z.object({
+    page: z.coerce.number().int().min(1).catch(1),
+    limit: z.coerce.number().int().min(1).max(100).catch(20),
+    search: z.string().catch(''),
+    status: z.string().catch(''),
+  }),
+  component: StudentsPage,
 })
