@@ -128,7 +128,16 @@ Untuk create/update/patch/release/assign:
 7. Pada 409/400, tampilkan error dekat field/form.
 8. Simpan request ID untuk troubleshooting. Audit log dibuat backend; frontend tidak perlu mengirim snapshot password atau token.
 
-## 7. Calendar event flow
+## 7. User role management flow
+
+1. Ambil katalog role dan permission dari `/internal/admin/roles` dan `/internal/admin/permissions`.
+2. Ambil akses efektif user dari `/internal/admin/users/{id}/access`.
+3. Saat admin menambahkan role, kirim `POST /internal/admin/users/{id}/roles` dengan `roleCode`.
+4. Saat admin menghapus role, kirim `DELETE /internal/admin/users/{id}/roles/{roleCode}`.
+5. Refresh access profile setelah mutasi. Backend menghitung permission efektif dari seluruh role user.
+6. Tangani `403` untuk operator tanpa `users.manage` dan `404` untuk role atau assignment yang tidak ditemukan.
+
+## 8. Calendar event flow
 
 Admin menggunakan `/internal/admin/events` untuk membuat dan mengelola event. `GET /internal/admin/events/{id}` mengambil detail berdasarkan UUID. `PATCH` bersifat partial: field yang tidak dikirim dipertahankan. `DELETE` tidak menghapus fisik data, tetapi mengubah status menjadi `ARCHIVED`. Field `status` dapat berupa `DRAFT`, `PUBLISHED`, atau `ARCHIVED`; hanya `PUBLISHED` yang dikirim endpoint `/calendar/events`. Status `PUBLISHED` membutuhkan permission `events.publish`.
 

@@ -19,6 +19,16 @@ Base URL: `/api/v1`. Semua path di bawah ditulis relatif terhadap base URL.
 | GET | `/internal/admin/users/me` | - |
 | PATCH | `/internal/admin/users/{id}` | `UpdateAdminUserRequest` |
 | PATCH | `/internal/admin/users/{id}/password` | `UpdateAdminPasswordRequest` |
+| GET | `/internal/admin/users/{id}/access` | user ID; role dan permission efektif |
+| POST | `/internal/admin/users/{id}/roles` | `{ "roleCode": "event_editor" }` |
+| DELETE | `/internal/admin/users/{id}/roles/{roleCode}` | user ID dan role code |
+
+Katalog akses:
+
+| Method | Path | Permission |
+|---|---|---|
+| GET | `/internal/admin/roles` | `users.manage` |
+| GET | `/internal/admin/permissions` | `users.manage` |
 
 ## 3. Student helper — `students.read`
 
@@ -59,7 +69,7 @@ Base URL: `/api/v1`. Semua path di bawah ditulis relatif terhadap base URL.
 | GET | `/internal/admin/events` | `page`, `limit`, `scope`, `category`, `status` |
 | POST | `/internal/admin/events` | `CalendarEventRequest` |
 | GET | `/internal/admin/events/{id}` | UUID |
-| PATCH | `/internal/admin/events/{id}` | `CalendarEventRequest`, UUID |
+| PATCH | `/internal/admin/events/{id}` | `CalendarEventPatchRequest`, UUID |
 | DELETE | `/internal/admin/events/{id}` | UUID; soft archive |
 
 Event admin menggunakan permission `events.manage`; perubahan status ke/dari `PUBLISHED` juga membutuhkan `events.publish`. Setiap mutasi diaudit. Public response menggunakan `data.items`, `data.count`, dataset `version`, serta dapat mengembalikan `304 Not Modified` dengan ETag.

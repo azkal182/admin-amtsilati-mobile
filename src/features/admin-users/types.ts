@@ -16,3 +16,18 @@ export type AdminUserInput = {
   name: string
   password?: string
 }
+
+export type AdminRole = {
+  id: number
+  code: string
+  name: string
+  description: string
+  isSystem: boolean
+}
+export type AdminPermission = {
+  id: number
+  code: string
+  name: string
+  description: string
+}
+export type AdminAccess = { roles: AdminRole[]; permissions: AdminPermission[] }

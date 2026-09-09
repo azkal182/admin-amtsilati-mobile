@@ -234,6 +234,133 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalError'
+  /internal/admin/users/{id}/access:
+    get:
+      tags:
+        - Internal Admin
+      summary: Get effective roles and permissions for an admin user
+      security:
+        - bearerAdminAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AdminUserIDParam'
+      responses:
+        '200':
+          description: Admin user access retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUserAccessResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/admin/users/{id}/roles:
+    post:
+      tags:
+        - Internal Admin
+      summary: Assign a role to an admin user
+      security:
+        - bearerAdminAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AdminUserIDParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignAdminRoleRequest'
+      responses:
+        '200':
+          description: Admin user role assigned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUserAccessResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/admin/users/{id}/roles/{roleCode}:
+    delete:
+      tags:
+        - Internal Admin
+      summary: Revoke a role from an admin user
+      security:
+        - bearerAdminAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AdminUserIDParam'
+        - name: roleCode
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Admin user role revoked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUserAccessResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/admin/roles:
+    get:
+      tags:
+        - Internal Admin
+      summary: List available admin roles
+      security:
+        - bearerAdminAuth: []
+      responses:
+        '200':
+          description: Admin roles retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminRolesResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/admin/permissions:
+    get:
+      tags:
+        - Internal Admin
+      summary: List available admin permissions
+      security:
+        - bearerAdminAuth: []
+      responses:
+        '200':
+          description: Admin permissions retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminPermissionsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
   /internal/admin/users/{id}:
     patch:
       tags:
@@ -1888,6 +2015,14 @@ components:
       required: true
       schema:
         type: integer
+    AdminUserIDParam:
+      name: id
+      in: path
+      required: true
+      description: Internal admin user ID
+      schema:
+        type: integer
+        format: int64
     RefreshTokenHeader:
       name: refreshtoken
       in: header
@@ -3655,6 +3790,63 @@ components:
               $ref: '#/components/schemas/HealthData'
           required:
             - data
+    AdminRole:
+      type: object
+      required: [id, code, name, description, isSystem]
+      properties:
+        id: {type: integer, format: int64}
+        code: {type: string}
+        name: {type: string}
+        description: {type: string}
+        isSystem: {type: boolean}
+    AdminPermission:
+      type: object
+      required: [id, code, name, description]
+      properties:
+        id: {type: integer, format: int64}
+        code: {type: string}
+        name: {type: string}
+        description: {type: string}
+    AdminUserAccess:
+      type: object
+      required: [roles, permissions]
+      properties:
+        roles:
+          type: array
+          items: {$ref: '#/components/schemas/AdminRole'}
+        permissions:
+          type: array
+          items: {$ref: '#/components/schemas/AdminPermission'}
+    AdminUserAccessResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          required: [data]
+          properties:
+            data: {$ref: '#/components/schemas/AdminUserAccess'}
+    AdminRolesResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          required: [data]
+          properties:
+            data:
+              type: array
+              items: {$ref: '#/components/schemas/AdminRole'}
+    AdminPermissionsResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          required: [data]
+          properties:
+            data:
+              type: array
+              items: {$ref: '#/components/schemas/AdminPermission'}
+    AssignAdminRoleRequest:
+      type: object
+      required: [roleCode]
+      properties:
+        roleCode: {type: string, minLength: 1, example: event_editor}
     CalendarEventRequest:
       type: object
       required: [code, title, category, dateRule, scope]

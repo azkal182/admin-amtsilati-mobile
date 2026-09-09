@@ -1,7 +1,15 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate, useSearch } from '@tanstack/react-router'
-import { Plus, Search, KeyRound, Pencil, RefreshCw } from 'lucide-react'
+import {
+  Plus,
+  Search,
+  KeyRound,
+  Pencil,
+  RefreshCw,
+  ShieldCheck,
+  X,
+} from 'lucide-react'
 import { toast } from 'sonner'
 import { ApiRequestError } from '@/api/types'
 import { handleServerError } from '@/lib/handle-server-error'
@@ -33,13 +41,19 @@ import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search as GlobalSearch } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
 import {
+  adminAccessApi,
   listAdminUsers,
   createAdminUser,
   updateAdminPassword,
   updateAdminUser,
 } from './api'
 import { adminPasswordSchema, adminUserSchema } from './schemas'
-import type { AdminUser } from './types'
+import type {
+  AdminAccess,
+  AdminPermission,
+  AdminRole,
+  AdminUser,
+} from './types'
 
 const queryKey = ['admin-users']
 
@@ -50,9 +64,25 @@ export function AdminUsersPage() {
   const [searchText, setSearchText] = useState(search.search)
   const [editor, setEditor] = useState<AdminUser | 'new' | null>(null)
   const [passwordUser, setPasswordUser] = useState<AdminUser | null>(null)
+  const [accessUser, setAccessUser] = useState<AdminUser | null>(null)
   const query = useQuery({
     queryKey: [...queryKey, search],
     queryFn: () => listAdminUsers(search),
+  })
+  const rolesQuery = useQuery({
+    queryKey: ['admin-roles'],
+    queryFn: adminAccessApi.roles,
+    enabled: !!accessUser,
+  })
+  const permissionsQuery = useQuery({
+    queryKey: ['admin-permissions'],
+    queryFn: adminAccessApi.permissions,
+    enabled: !!accessUser,
+  })
+  const accessQuery = useQuery({
+    queryKey: ['admin-access', accessUser?.id],
+    queryFn: () => adminAccessApi.access(accessUser!.id),
+    enabled: !!accessUser,
   })
   const mutationOptions = {
     onSuccess: () => queryClient.invalidateQueries({ queryKey }),
@@ -90,6 +120,35 @@ export function AdminUsersPage() {
       void queryClient.invalidateQueries({ queryKey })
       toast.success('Password administrator berhasil diperbarui.')
       setPasswordUser(null)
+    },
+  })
+  const accessMutationOptions = {
+    onError: handleServerError,
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: ['admin-access', accessUser?.id],
+      }),
+  }
+  const assignRoleMutation = useMutation({
+    mutationFn: ({ id, roleCode }: { id: number; roleCode: string }) =>
+      adminAccessApi.assignRole(id, roleCode),
+    ...accessMutationOptions,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: ['admin-access', accessUser?.id],
+      })
+      toast.success('Role berhasil ditambahkan.')
+    },
+  })
+  const revokeRoleMutation = useMutation({
+    mutationFn: ({ id, roleCode }: { id: number; roleCode: string }) =>
+      adminAccessApi.revokeRole(id, roleCode),
+    ...accessMutationOptions,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: ['admin-access', accessUser?.id],
+      })
+      toast.success('Role berhasil dicabut.')
     },
   })
   const pagination = query.data?.pagination
@@ -233,6 +292,14 @@ export function AdminUsersPage() {
                               <KeyRound />
                               Password
                             </Button>
+                            <Button
+                              variant='outline'
+                              size='sm'
+                              onClick={() => setAccessUser(user)}
+                            >
+                              <ShieldCheck />
+                              Akses
+                            </Button>
                           </div>
                         </TableCell>
                       </TableRow>
@@ -303,6 +370,32 @@ export function AdminUsersPage() {
         onSubmit={(password) => {
           if (passwordUser)
             passwordMutation.mutate({ id: passwordUser.id, password })
+        }}
+      />
+      <AccessDialog
+        user={accessUser}
+        roles={(rolesQuery.data?.data ?? []) as AdminRole[]}
+        permissions={(permissionsQuery.data?.data ?? []) as AdminPermission[]}
+        access={
+          (accessQuery.data?.data ?? {
+            roles: [],
+            permissions: [],
+          }) as AdminAccess
+        }
+        loading={
+          rolesQuery.isPending ||
+          permissionsQuery.isPending ||
+          accessQuery.isPending
+        }
+        pending={assignRoleMutation.isPending || revokeRoleMutation.isPending}
+        onClose={() => setAccessUser(null)}
+        onAssign={(roleCode) => {
+          if (accessUser)
+            assignRoleMutation.mutate({ id: accessUser.id, roleCode })
+        }}
+        onRevoke={(roleCode) => {
+          if (accessUser)
+            revokeRoleMutation.mutate({ id: accessUser.id, roleCode })
         }}
       />
     </>
@@ -496,6 +589,147 @@ function PasswordDialog({
             }}
           >
             {pending ? 'Menyimpan...' : 'Simpan password'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+function AccessDialog({
+  user,
+  roles,
+  permissions,
+  access,
+  loading,
+  pending,
+  onClose,
+  onAssign,
+  onRevoke,
+}: {
+  user: AdminUser | null
+  roles: AdminRole[]
+  permissions: AdminPermission[]
+  access: AdminAccess
+  loading: boolean
+  pending: boolean
+  onClose: () => void
+  onAssign: (roleCode: string) => void
+  onRevoke: (roleCode: string) => void
+}) {
+  const [roleCode, setRoleCode] = useState('')
+  const assigned = new Set(access.roles.map((role) => role.code))
+  const available = roles.filter((role) => !assigned.has(role.code))
+  return (
+    <Dialog open={!!user} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className='max-h-[85vh] overflow-y-auto sm:max-w-2xl'>
+        <DialogHeader>
+          <DialogTitle>Access management</DialogTitle>
+          <DialogDescription>
+            Role dan permission efektif untuk {user?.username}. Perubahan
+            berlaku pada request berikutnya.
+          </DialogDescription>
+        </DialogHeader>
+        {loading ? (
+          <div className='space-y-3'>
+            <Skeleton className='h-8 w-full' />
+            <Skeleton className='h-20 w-full' />
+          </div>
+        ) : (
+          <div className='space-y-5'>
+            <section
+              className='space-y-2'
+              aria-labelledby='assigned-roles-title'
+            >
+              <h3 id='assigned-roles-title' className='font-medium'>
+                Role assigned
+              </h3>
+              {access.roles.length === 0 ? (
+                <p className='text-sm text-muted-foreground'>Belum ada role.</p>
+              ) : (
+                <div className='flex flex-wrap gap-2'>
+                  {access.roles.map((role) => (
+                    <Badge
+                      key={role.code}
+                      variant='secondary'
+                      className='gap-1'
+                    >
+                      {role.name}
+                      <button
+                        type='button'
+                        className='rounded-sm focus-visible:ring-2 focus-visible:outline-none'
+                        aria-label={`Cabut role ${role.name}`}
+                        disabled={pending}
+                        onClick={() => onRevoke(role.code)}
+                      >
+                        <X className='size-3' />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </section>
+            <div className='flex flex-wrap gap-2'>
+              <Label htmlFor='assign-role' className='sr-only'>
+                Pilih role
+              </Label>
+              <select
+                id='assign-role'
+                className='h-9 min-w-56 rounded-md border bg-background px-3 text-sm'
+                value={roleCode}
+                onChange={(event) => setRoleCode(event.target.value)}
+              >
+                <option value=''>Pilih role untuk ditambahkan...</option>
+                {available.map((role) => (
+                  <option key={role.code} value={role.code}>
+                    {role.name} ({role.code})
+                  </option>
+                ))}
+              </select>
+              <Button
+                disabled={!roleCode || pending}
+                onClick={() => {
+                  onAssign(roleCode)
+                  setRoleCode('')
+                }}
+              >
+                Tambah role
+              </Button>
+            </div>
+            <section
+              className='space-y-2'
+              aria-labelledby='effective-permissions-title'
+            >
+              <h3 id='effective-permissions-title' className='font-medium'>
+                Permission efektif
+              </h3>
+              {access.permissions.length === 0 ? (
+                <p className='text-sm text-muted-foreground'>
+                  Belum ada permission efektif.
+                </p>
+              ) : (
+                <ul className='grid gap-2 sm:grid-cols-2'>
+                  {access.permissions.map((permission) => (
+                    <li key={permission.code} className='rounded-md border p-2'>
+                      <p className='text-sm font-medium'>{permission.code}</p>
+                      <p className='text-xs text-muted-foreground'>
+                        {permission.description}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+            {roles.length === 0 && permissions.length === 0 && (
+              <p className='text-sm text-destructive'>
+                Katalog access tidak tersedia.
+              </p>
+            )}
+          </div>
+        )}
+        <DialogFooter>
+          <Button variant='outline' onClick={onClose}>
+            Tutup
           </Button>
         </DialogFooter>
       </DialogContent>

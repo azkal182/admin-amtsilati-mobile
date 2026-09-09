@@ -35,6 +35,7 @@ Dashboard belum memiliki endpoint agregasi khusus. Bangun dashboard secara modul
 - Create admin: username, name, password.
 - Edit profile: username, name.
 - Update password: password baru.
+- Access management: lihat role/permission efektif, assign role, dan revoke role.
 - Tabel hanya menampilkan `id`, `username`, `name`, `isActive`.
 
 ### Students

@@ -39,7 +39,9 @@ Frontend tidak perlu memverifikasi signature JWT untuk authorization bisnis; bac
 
 Role seed saat ini: `super_admin`, `event_editor`, `event_publisher`, `content_editor`, `store_manager`, dan `calendar_manager`.
 
-Saat ini response `GET /internal/admin/users/me` belum mengembalikan daftar permission. Karena itu, frontend tidak boleh menganggap response tersebut sebagai sumber permission dinamis. Gunakan menu capability yang dikonfigurasi sementara atau tunggu endpoint access profile khusus.
+Untuk membaca role dan permission efektif seorang admin, gunakan `GET /internal/admin/users/{id}/access`. Daftar role tersedia melalui `GET /internal/admin/roles`, sedangkan daftar permission melalui `GET /internal/admin/permissions`. Seluruh endpoint ini membutuhkan `users.manage`.
+
+Assignment dilakukan dengan `POST /internal/admin/users/{id}/roles` dan body `{ "roleCode": "event_editor" }`. Penghapusan role menggunakan `DELETE /internal/admin/users/{id}/roles/{roleCode}`. Perubahan akses berlaku pada request berikutnya karena middleware membaca permission dari PostgreSQL pada setiap request.
 
 ## 4. Permission UX
 
