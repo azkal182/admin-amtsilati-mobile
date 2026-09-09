@@ -108,18 +108,18 @@ Lulus jika semua CRUD admin user yang tersedia dan read-only student flow berjal
 
 ### Checklist
 
-- [ ] Hanya memakai `/internal/admin/syahriyah/*`.
-- [ ] Tidak mengirim `X-Internal-Token`.
-- [ ] Trigger sync tidak dapat dijalankan paralel dari UI.
-- [ ] 409 sync running ditampilkan sebagai conflict yang jelas.
-- [ ] Polling berhenti pada success, failed, timeout, atau unmount.
-- [ ] Nominal diformat sebagai IDR.
-- [ ] Release membutuhkan konfirmasi.
-- [ ] Form periode mengikuti format `YYYY-MM`.
+- [x] Hanya memakai `/internal/admin/syahriyah/*`.
+- [x] Tidak mengirim `X-Internal-Token`.
+- [x] Trigger sync tidak dapat dijalankan paralel dari UI.
+- [x] 409 sync running ditampilkan sebagai conflict yang jelas.
+- [x] Polling berhenti pada success, failed, timeout, atau unmount.
+- [x] Nominal diformat sebagai IDR.
+- [x] Release membutuhkan konfirmasi.
+- [x] Form periode mengikuti format `YYYY-MM`.
 
 ### Gate 4
 
-Lulus jika sync, tariff, snapshot, dan pengurus dapat dijalankan tanpa memakai endpoint legacy atau internal token tambahan.
+Lulus jika sync, tariff, snapshot, dan pengurus dapat dijalankan tanpa memakai endpoint legacy atau internal token tambahan. Implementasi Fase 4 selesai pada 2026-09-09 dengan API client, form validation, bounded sync polling, conflict handling, invalidation, student picker, dan release confirmation. Unit suite, lint, format check, dan build berhasil. Smoke read-only backend menghasilkan `200` untuk sync status, tariffs, dan pengurus; snapshot `1447-01` menghasilkan `404` sesuai state not-found. Gate 4 pending smoke mutation sync/tariff/rebuild/assign/release terhadap environment dev agar tidak mengubah data operasional tanpa prosedur cleanup.
 
 ## Fase 5 — Store Management
 

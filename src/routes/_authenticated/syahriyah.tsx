@@ -1,11 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { ModulePlaceholder } from '@/components/module-placeholder'
+import { SyahriyahPage } from '@/features/syahriyah'
 
 export const Route = createFileRoute('/_authenticated/syahriyah')({
-  component: () => (
-    <ModulePlaceholder
-      title='Syahriyah'
-      description='Operasional sync, tariff, snapshot, dan pengurus.'
-    />
-  ),
+  component: SyahriyahPage,
 })

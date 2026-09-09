@@ -1,0 +1,1 @@
+export { SyahriyahPage } from './page'
