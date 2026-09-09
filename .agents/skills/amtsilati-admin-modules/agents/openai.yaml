@@ -1,0 +1,4 @@
+interface:
+  display_name: "Amtsilati Admin Modules"
+  short_description: "Build API-backed admin domain modules"
+  default_prompt: "Use $amtsilati-admin-modules to implement an Amtsilati admin domain module."

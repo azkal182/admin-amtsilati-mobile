@@ -1,0 +1,3801 @@
+﻿openapi: 3.0.3
+info:
+  title: API SIDAFA v2
+  version: 1.0.0
+  description: |
+    API backend SIDAFA v2 (read-only). Base URL: /api/v1.
+servers:
+  - url: /api/v1
+tags:
+  - name: Auth
+  - name: Users
+  - name: Accounts
+  - name: External Gateway
+  - name: Internal Syahriyah
+  - name: Internal Admin
+  - name: Calendar Events
+  - name: Health
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /auth/token/refresh:
+    post:
+      tags:
+        - Auth
+      summary: Refresh access token
+      description: Provide refreshToken in body or in header "refreshtoken".
+      parameters:
+        - $ref: '#/components/parameters/RefreshTokenHeader'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenRequest'
+      responses:
+        '200':
+          description: Token refreshed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefreshTokenResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /auth/logout:
+    post:
+      tags:
+        - Auth
+      summary: Logout
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogoutResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/admin/auth/login:
+    post:
+      tags:
+        - Internal Admin
+      summary: Admin login (internal DB)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminLoginRequest'
+      responses:
+        '200':
+          description: Admin login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminLoginResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/admin/auth/token/refresh:
+    post:
+      tags:
+        - Internal Admin
+      summary: Refresh admin access token
+      parameters:
+        - $ref: '#/components/parameters/RefreshTokenHeader'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenRequest'
+      responses:
+        '200':
+          description: Admin token refreshed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefreshTokenResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/admin/auth/logout:
+    post:
+      tags:
+        - Internal Admin
+      summary: Admin logout
+      responses:
+        '200':
+          description: Admin logout successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogoutResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/admin/users:
+    get:
+      tags:
+        - Internal Admin
+      summary: List admin users
+      security:
+        - bearerAdminAuth: []
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 20
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Admin users retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUsersPaginatedResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      tags:
+        - Internal Admin
+      summary: Create admin user
+      security:
+        - bearerAdminAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAdminUserRequest'
+      responses:
+        '200':
+          description: Admin user created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUserResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          description: Username already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/admin/users/me:
+    get:
+      tags:
+        - Internal Admin
+      summary: Get current admin profile
+      security:
+        - bearerAdminAuth: []
+      responses:
+        '200':
+          description: Admin profile retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUserResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/admin/users/{id}:
+    patch:
+      tags:
+        - Internal Admin
+      summary: Update admin user profile
+      security:
+        - bearerAdminAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAdminUserRequest'
+      responses:
+        '200':
+          description: Admin user updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUserResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Username already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/admin/users/{id}/password:
+    patch:
+      tags:
+        - Internal Admin
+      summary: Update admin user password
+      security:
+        - bearerAdminAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAdminPasswordRequest'
+      responses:
+        '200':
+          description: Admin password updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminPasswordUpdateResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/admin/store/products:
+    get:
+      tags:
+        - Internal Admin
+      summary: List store products (admin)
+      security:
+        - bearerAdminAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 20
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: available
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Store products retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminStoreProductsPaginatedResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      tags:
+        - Internal Admin
+      summary: Create store product
+      security:
+        - bearerAdminAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminStoreProductUpsertRequest'
+      responses:
+        '200':
+          description: Store product created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminStoreProductResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/admin/store/products/{id}:
+    get:
+      tags:
+        - Internal Admin
+      summary: Get store product by id (admin)
+      security:
+        - bearerAdminAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Store product retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminStoreProductResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    patch:
+      tags:
+        - Internal Admin
+      summary: Update store product
+      security:
+        - bearerAdminAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminStoreProductUpsertRequest'
+      responses:
+        '200':
+          description: Store product updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminStoreProductResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/admin/store/uploads/sign:
+    post:
+      tags:
+        - Internal Admin
+      summary: Generate signed upload params for Cloudinary
+      security:
+        - bearerAdminAuth: []
+      responses:
+        '200':
+          description: Store upload signature generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminStoreUploadSignResponse'
+        '429':
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/admin/students:
+    get:
+      tags:
+        - Internal Admin
+      summary: List students from internal snapshot
+      security:
+        - bearerAdminAuth: []
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 20
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Students snapshot retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminStudentsPaginatedResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/admin/students/{idSantri}:
+    get:
+      tags:
+        - Internal Admin
+      summary: Get student snapshot by idSantri
+      security:
+        - bearerAdminAuth: []
+      parameters:
+        - name: idSantri
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Student snapshot retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminStudentResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Get all users (paginated)
+      security:
+        - bearerUserAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/SearchParam'
+      responses:
+        '200':
+          description: Users retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsersPaginatedResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /users/me:
+    get:
+      tags:
+        - Users
+      summary: Get current user detail
+      description: Returns the current user profile without password hash or device token.
+      security:
+        - bearerUserAuth: []
+      responses:
+        '200':
+          description: User detail retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetailResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /users/{id}:
+    get:
+      tags:
+        - Users
+      summary: Get user by ID
+      security:
+        - bearerUserAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UserIdParam'
+      responses:
+        '200':
+          description: User retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /accounts/balance:
+    get:
+      tags:
+        - Accounts
+      summary: Get saldo tabungan + UPT
+      security:
+        - bearerUserAuth: []
+      responses:
+        '200':
+          description: Saldo retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaldoResponseEnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /accounts/upt/balance:
+    get:
+      tags:
+        - Accounts
+      summary: Get saldo UPT
+      security:
+        - bearerUserAuth: []
+      responses:
+        '200':
+          description: Saldo UPT retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaldoUptResponseEnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /accounts/savings/transactions:
+    get:
+      tags:
+        - Accounts
+      summary: Get history tabungan
+      security:
+        - bearerUserAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: History tabungan retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransaksiHistoryResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /accounts/upt/transactions:
+    get:
+      tags:
+        - Accounts
+      summary: Get history UPT
+      security:
+        - bearerUserAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: History UPT retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UptHistoryResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /accounts/syahriyah/transactions:
+    get:
+      tags:
+        - Accounts
+      summary: Get history syahriyah
+      security:
+        - bearerUserAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: History syahriyah retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyahriyahHistoryResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /accounts/payments:
+    get:
+      tags:
+        - Accounts
+      summary: Get history pembayaran
+      security:
+        - bearerUserAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: History pembayaran retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PembayaranHistoryResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /accounts/activities/latest:
+    get:
+      tags:
+        - Accounts
+      summary: Get latest merged activities (upt, syahriyah, payments)
+      security:
+        - bearerUserAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Max merged items returned
+          schema:
+            type: integer
+            minimum: 1
+            default: 10
+        - name: categories
+          in: query
+          description: "Filter categories (comma separated). Allowed: tabungan, upt, syahriyah, payments"
+          schema:
+            type: string
+            example: tabungan,upt,payments
+      responses:
+        '200':
+          description: Latest activities retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LatestActivitiesResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /students/permit:
+    get:
+      tags:
+        - External Gateway
+      summary: Gateway permit by authenticated student's NIS
+      description: Forwards request to external API `/api/v2/students/nis/:nis/permit` using NIS from current JWT user.
+      security:
+        - bearerUserAuth: []
+      responses:
+        '200':
+          description: External permit retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalPermitResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /students/attendance:
+    get:
+      tags:
+        - External Gateway
+      summary: Gateway attendance by authenticated student's NIS
+      description: Forwards request to external API `/api/v2/students/nis/:nis/attendance` using NIS from current JWT user.
+      security:
+        - bearerUserAuth: []
+      responses:
+        '200':
+          description: External attendance retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalAttendanceResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /students/academic:
+    get:
+      tags:
+        - External Gateway
+      summary: Gateway academic by authenticated student's NIS
+      description: Forwards request to external API `/api/v2/students/nis/:nis/academic` using NIS from current JWT user.
+      security:
+        - bearerUserAuth: []
+      responses:
+        '200':
+          description: External academic retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalAcademicResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /store/products:
+    get:
+      tags:
+        - Accounts
+      summary: List available store products
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 20
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Store products retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreProductsPaginatedResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /store/products/{id}:
+    get:
+      tags:
+        - Accounts
+      summary: Get available store product by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Store product retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreProductResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/syahriyah/sync/students:
+    post:
+      tags:
+        - Internal Syahriyah
+      summary: Trigger async student snapshot sync (legacy to internal DB)
+      deprecated: true
+      description: "Deprecated. Gunakan `/api/v1/internal/admin/syahriyah/sync/students`."
+      security:
+        - bearerUserAuth: []
+      responses:
+        '200':
+          description: Student sync started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TriggerStudentSyncResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          description: Sync already running
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/syahriyah/sync/students/status:
+    get:
+      tags:
+        - Internal Syahriyah
+      summary: Get latest student sync status metadata
+      deprecated: true
+      description: "Deprecated. Gunakan `/api/v1/internal/admin/syahriyah/sync/students/status`."
+      security:
+        - bearerUserAuth: []
+      responses:
+        '200':
+          description: Student sync status retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentSyncStatusResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /internal/syahriyah/tariffs:
+    get:
+      tags:
+        - Internal Syahriyah
+      summary: List tariff rules
+      deprecated: true
+      description: "Deprecated. Gunakan `/api/v1/internal/admin/syahriyah/tariffs`."
+      security:
+        - bearerUserAuth: []
+      parameters:
+        - $ref: '#/components/parameters/InternalAccessTokenHeader'
+        - name: hijriPeriod
+          in: query
+          required: false
+          schema:
+            type: string
+            example: "1447-01"
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 100
+      responses:
+        '200':
+          description: Tariff list retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TariffListResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      tags:
+        - Internal Syahriyah
+      summary: Upsert tariff by Hijri period and category
+      deprecated: true
+      description: "Deprecated. Gunakan `/api/v1/internal/admin/syahriyah/tariffs`."
+      security:
+        - bearerUserAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertTariffRequest'
+      responses:
+        '200':
+          description: Tariff saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpsertTariffResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/syahriyah/billing/preview:
+    post:
+      tags:
+        - Internal Syahriyah
+      summary: Preview billing obligation by Hijri period (service-driven)
+      security:
+        - bearerUserAuth: []
+      parameters:
+        - $ref: '#/components/parameters/InternalAccessTokenHeader'
+        - name: hijriPeriod
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "1447-01"
+      responses:
+        '200':
+          description: Billing preview generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillingPreviewResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /internal/syahriyah/arrears/inquiry:
+    post:
+      tags:
+        - Internal Syahriyah
+      summary: Inquiry sequential arrears based on legacy last paid period (service-driven)
+      security:
+        - bearerUserAuth: []
+      parameters:
+        - $ref: '#/components/parameters/InternalAccessTokenHeader'
+        - name: untilPeriod
+          in: query
+          required: false
+          description: Optional upper period bound (YYYY-MM). If empty, system uses latest tariff period.
+          schema:
+            type: string
+            example: "1447-06"
+      responses:
+        '200':
+          description: Arrears inquiry generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArrearsInquiryResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /internal/syahriyah/payments/transactions:
+    post:
+      tags:
+        - Internal Syahriyah
+      summary: Create payment transaction (provider-agnostic)
+      security:
+        - bearerUserAuth: []
+      parameters:
+        - $ref: '#/components/parameters/InternalAccessTokenHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePaymentRequest'
+      responses:
+        '200':
+          description: Payment transaction created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatePaymentResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/syahriyah/payments/webhook:
+    post:
+      tags:
+        - Internal Syahriyah
+      summary: Handle payment provider webhook with idempotency
+      security:
+        - bearerUserAuth: []
+      parameters:
+        - $ref: '#/components/parameters/InternalAccessTokenHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentWebhookRequest'
+      responses:
+        '200':
+          description: Payment webhook processed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentWebhookResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /internal/syahriyah/snapshots/rebuild:
+    post:
+      tags:
+        - Internal Syahriyah
+      summary: Rebuild monthly snapshot for a Hijri period
+      deprecated: true
+      description: "Deprecated. Gunakan `/api/v1/internal/admin/syahriyah/snapshots/rebuild`."
+      security:
+        - bearerUserAuth: []
+      parameters:
+        - $ref: '#/components/parameters/InternalAccessTokenHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SnapshotRebuildRequest'
+      responses:
+        '200':
+          description: Snapshot generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SnapshotResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/syahriyah/snapshots:
+    get:
+      tags:
+        - Internal Syahriyah
+      summary: Get monthly snapshot by Hijri period
+      deprecated: true
+      description: "Deprecated. Gunakan `/api/v1/internal/admin/syahriyah/snapshots`."
+      security:
+        - bearerUserAuth: []
+      parameters:
+        - $ref: '#/components/parameters/InternalAccessTokenHeader'
+        - name: hijriPeriod
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "1447-01"
+      responses:
+        '200':
+          description: Snapshot retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SnapshotResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/syahriyah/pengurus/assign:
+    post:
+      tags:
+        - Internal Syahriyah
+      summary: Assign pengurus period for santri
+      deprecated: true
+      description: "Deprecated. Gunakan `/api/v1/internal/admin/syahriyah/pengurus/assign`."
+      security:
+        - bearerUserAuth: []
+      parameters:
+        - $ref: '#/components/parameters/InternalAccessTokenHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignPengurusRequest'
+      responses:
+        '200':
+          description: Pengurus assigned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PengurusMutationResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/syahriyah/pengurus:
+    get:
+      tags:
+        - Internal Syahriyah
+      summary: List pengurus histories
+      deprecated: true
+      description: "Deprecated. Gunakan `/api/v1/internal/admin/syahriyah/pengurus`."
+      security:
+        - bearerUserAuth: []
+      parameters:
+        - $ref: '#/components/parameters/InternalAccessTokenHeader'
+        - name: idSantri
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: activeOnly
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: true
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 100
+      responses:
+        '200':
+          description: Pengurus list retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PengurusListResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/syahriyah/pengurus/release:
+    post:
+      tags:
+        - Internal Syahriyah
+      summary: Release active pengurus period for santri
+      deprecated: true
+      description: "Deprecated. Gunakan `/api/v1/internal/admin/syahriyah/pengurus/release`."
+      security:
+        - bearerUserAuth: []
+      parameters:
+        - $ref: '#/components/parameters/InternalAccessTokenHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReleasePengurusRequest'
+      responses:
+        '200':
+          description: Pengurus released
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PengurusMutationResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/admin/syahriyah/sync/students:
+    post:
+      tags:
+        - Internal Admin
+      summary: Trigger async student snapshot sync (legacy to internal DB)
+      security:
+        - bearerAdminAuth: []
+      parameters:
+        - $ref: '#/components/parameters/InternalAccessTokenHeader'
+      responses:
+        '200':
+          description: Student sync started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TriggerStudentSyncResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          description: Sync already running
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/admin/syahriyah/sync/students/status:
+    get:
+      tags:
+        - Internal Admin
+      summary: Get latest student sync status metadata
+      security:
+        - bearerAdminAuth: []
+      parameters:
+        - $ref: '#/components/parameters/InternalAccessTokenHeader'
+      responses:
+        '200':
+          description: Student sync status retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentSyncStatusResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/admin/syahriyah/tariffs:
+    get:
+      tags:
+        - Internal Admin
+      summary: List tariff rules
+      security:
+        - bearerAdminAuth: []
+      parameters:
+        - $ref: '#/components/parameters/InternalAccessTokenHeader'
+        - name: hijriPeriod
+          in: query
+          required: false
+          schema:
+            type: string
+            example: "1447-01"
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 100
+      responses:
+        '200':
+          description: Tariff list retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TariffListResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      tags:
+        - Internal Admin
+      summary: Upsert tariff by Hijri period and category
+      security:
+        - bearerAdminAuth: []
+      parameters:
+        - $ref: '#/components/parameters/InternalAccessTokenHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertTariffRequest'
+      responses:
+        '200':
+          description: Tariff saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpsertTariffResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/admin/syahriyah/snapshots/rebuild:
+    post:
+      tags:
+        - Internal Admin
+      summary: Rebuild monthly snapshot for a Hijri period
+      security:
+        - bearerAdminAuth: []
+      parameters:
+        - $ref: '#/components/parameters/InternalAccessTokenHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SnapshotRebuildRequest'
+      responses:
+        '200':
+          description: Snapshot generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SnapshotResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/admin/syahriyah/snapshots:
+    get:
+      tags:
+        - Internal Admin
+      summary: Get monthly snapshot by Hijri period
+      security:
+        - bearerAdminAuth: []
+      parameters:
+        - $ref: '#/components/parameters/InternalAccessTokenHeader'
+        - name: hijriPeriod
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "1447-01"
+      responses:
+        '200':
+          description: Snapshot retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SnapshotResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/admin/syahriyah/pengurus:
+    get:
+      tags:
+        - Internal Admin
+      summary: List pengurus histories
+      security:
+        - bearerAdminAuth: []
+      parameters:
+        - $ref: '#/components/parameters/InternalAccessTokenHeader'
+        - name: idSantri
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: activeOnly
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: true
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 100
+      responses:
+        '200':
+          description: Pengurus list retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PengurusListResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/admin/syahriyah/pengurus/assign:
+    post:
+      tags:
+        - Internal Admin
+      summary: Assign pengurus period for santri
+      security:
+        - bearerAdminAuth: []
+      parameters:
+        - $ref: '#/components/parameters/InternalAccessTokenHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignPengurusRequest'
+      responses:
+        '200':
+          description: Pengurus assigned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PengurusMutationResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/admin/syahriyah/pengurus/release:
+    post:
+      tags:
+        - Internal Admin
+      summary: Release active pengurus period for santri
+      security:
+        - bearerAdminAuth: []
+      parameters:
+        - $ref: '#/components/parameters/InternalAccessTokenHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReleasePengurusRequest'
+      responses:
+        '200':
+          description: Pengurus released
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PengurusMutationResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check
+      responses:
+        '200':
+          description: Server is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /public/syahriyah/arrears:
+    get:
+      tags:
+        - Public Syahriyah
+      summary: Check active student arrears by NIS
+      parameters:
+        - name: nis
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: untilPeriod
+          in: query
+          required: false
+          description: Optional upper period bound (YYYY-MM); defaults to latest internal tariff period.
+          schema:
+            type: string
+            example: "1447-06"
+      responses:
+        '200':
+          description: Public arrears inquiry generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicArrearsResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /calendar/events:
+    get:
+      tags:
+        - Calendar Events
+      summary: Retrieve published calendar events for mobile clients
+      parameters:
+        - $ref: '#/components/parameters/CalendarScopeParam'
+        - $ref: '#/components/parameters/CalendarCategoryParam'
+        - $ref: '#/components/parameters/FromGregorianParam'
+        - $ref: '#/components/parameters/ToGregorianParam'
+        - $ref: '#/components/parameters/FromHijriYearParam'
+        - $ref: '#/components/parameters/ToHijriYearParam'
+        - $ref: '#/components/parameters/IncludeRecurringParam'
+        - name: If-None-Match
+          in: header
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Calendar events retrieved
+          headers:
+            ETag:
+              schema:
+                type: string
+            Cache-Control:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalendarEventsResponse'
+        '304':
+          description: Calendar event dataset has not changed
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/admin/events:
+    get:
+      tags:
+        - Internal Admin
+      summary: List calendar events for internal administration
+      security:
+        - bearerAdminAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/CalendarScopeParam'
+        - $ref: '#/components/parameters/CalendarCategoryParam'
+        - $ref: '#/components/parameters/CalendarStatusParam'
+      responses:
+        '200':
+          description: Calendar events retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminCalendarEventsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      tags:
+        - Internal Admin
+      summary: Create a calendar event
+      security:
+        - bearerAdminAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CalendarEventRequest'
+      responses:
+        '200':
+          description: Calendar event created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalendarEventResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /internal/admin/events/{id}:
+    get:
+      tags:
+        - Internal Admin
+      summary: Get a calendar event by UUID
+      security:
+        - bearerAdminAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Calendar event retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalendarEventResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    patch:
+      tags:
+        - Internal Admin
+      summary: Update a calendar event
+      security:
+        - bearerAdminAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CalendarEventPatchRequest'
+      responses:
+        '200':
+          description: Calendar event updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalendarEventResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    delete:
+      tags:
+        - Internal Admin
+      summary: Archive a calendar event
+      security:
+        - bearerAdminAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Calendar event archived
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalendarEventArchiveResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+components:
+  securitySchemes:
+    bearerUserAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAdminAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    PageParam:
+      name: page
+      in: query
+      description: Page number (1-based)
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    LimitParam:
+      name: limit
+      in: query
+      description: Page size
+      schema:
+        type: integer
+        minimum: 1
+        default: 100
+    SearchParam:
+      name: search
+      in: query
+      description: Search by nama or username
+      schema:
+        type: string
+    UserIdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    RefreshTokenHeader:
+      name: refreshtoken
+      in: header
+      required: false
+      description: Refresh token (alternative to request body)
+      schema:
+        type: string
+    InternalAccessTokenHeader:
+      name: X-Internal-Token
+      in: header
+      required: false
+      description: Optional internal guard token for internal Syahriyah endpoints
+      schema:
+        type: string
+    CalendarScopeParam:
+      name: scope
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [NATIONAL, PESANTREN]
+    CalendarCategoryParam:
+      name: category
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [ISLAMIC, NATIONAL, ACADEMIC, PESANTREN, PAYMENT, HOLIDAY, ANNOUNCEMENT, OTHER]
+    CalendarStatusParam:
+      name: status
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [DRAFT, PUBLISHED, ARCHIVED]
+    FromGregorianParam:
+      name: fromGregorian
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date
+    ToGregorianParam:
+      name: toGregorian
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date
+    FromHijriYearParam:
+      name: fromHijriYear
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+    ToHijriYearParam:
+      name: toHijriYear
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+    IncludeRecurringParam:
+      name: includeRecurring
+      in: query
+      required: false
+      description: Include YEARLY rules; defaults to true.
+      schema:
+        type: boolean
+        default: true
+  responses:
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  schemas:
+
+    UpsertTariffRequest:
+      type: object
+      properties:
+        hijriPeriod:
+          type: string
+          example: "1447-01"
+        category:
+          type: string
+          example: "santri_biasa"
+        amount:
+          type: integer
+          format: int64
+        createdBy:
+          type: string
+      required:
+        - hijriPeriod
+        - category
+        - amount
+    UpsertTariffData:
+      type: object
+      properties:
+        saved:
+          type: boolean
+      required:
+        - saved
+    UpsertTariffResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/UpsertTariffData'
+          required:
+            - data
+    TariffListResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/UpsertTariffRequest'
+          required:
+            - data
+    BillingPreviewData:
+      type: object
+      properties:
+        idSantri:
+          type: string
+        hijriPeriod:
+          type: string
+        category:
+          type: string
+        amount:
+          type: integer
+          format: int64
+        chargeable:
+          type: boolean
+        reason:
+          type: string
+        noProrata:
+          type: boolean
+        deterministic:
+          type: boolean
+      required:
+        - idSantri
+        - hijriPeriod
+        - category
+        - amount
+        - chargeable
+        - noProrata
+        - deterministic
+    BillingPreviewResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/BillingPreviewData'
+          required:
+            - data
+
+    AssignPengurusRequest:
+      type: object
+      properties:
+        idSantri:
+          type: string
+        startPeriod:
+          type: string
+          example: "1447-01"
+        note:
+          type: string
+      required:
+        - idSantri
+        - startPeriod
+    ReleasePengurusRequest:
+      type: object
+      properties:
+        idSantri:
+          type: string
+        endPeriod:
+          type: string
+          example: "1447-06"
+        note:
+          type: string
+      required:
+        - idSantri
+        - endPeriod
+    PengurusMutationData:
+      type: object
+      properties:
+        saved:
+          type: boolean
+      required:
+        - saved
+    PengurusMutationResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/PengurusMutationData'
+          required:
+            - data
+    PengurusHistoryItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        idSantri:
+          type: string
+        startPeriod:
+          type: string
+        endPeriod:
+          type: string
+          nullable: true
+        isActive:
+          type: boolean
+        note:
+          type: string
+      required:
+        - id
+        - idSantri
+        - startPeriod
+        - isActive
+        - note
+    PengurusListResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/PengurusHistoryItem'
+          required:
+            - data
+    ArrearsItem:
+      type: object
+      properties:
+        hijriPeriod:
+          type: string
+        category:
+          type: string
+        amount:
+          type: integer
+          format: int64
+        paidAmount:
+          type: integer
+          format: int64
+        remainingAmount:
+          type: integer
+          format: int64
+        status:
+          type: string
+      required:
+        - hijriPeriod
+        - category
+        - amount
+        - paidAmount
+        - remainingAmount
+        - status
+    ArrearsInquiryData:
+      type: object
+      properties:
+        idSantri:
+          type: string
+        lastPaidPeriod:
+          type: string
+          nullable: true
+        totalArrears:
+          type: integer
+          format: int64
+        currency:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArrearsItem'
+        sequentialBasis:
+          type: boolean
+      required:
+        - idSantri
+        - totalArrears
+        - currency
+        - items
+        - sequentialBasis
+    ArrearsInquiryResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/ArrearsInquiryData'
+          required:
+            - data
+    PublicArrearsStudent:
+      type: object
+      properties:
+        idSantri:
+          type: string
+        nis:
+          type: string
+        nama:
+          type: string
+        lastPaidPeriod:
+          type: string
+          nullable: true
+        totalArrears:
+          type: integer
+          format: int64
+        currency:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArrearsItem'
+      required:
+        - idSantri
+        - nis
+        - nama
+        - totalArrears
+        - currency
+        - items
+    PublicArrearsResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/PublicArrearsStudent'
+          required:
+            - data
+    CreatePaymentRequest:
+      type: object
+      properties:
+        idSantri:
+          type: string
+        amount:
+          type: integer
+          format: int64
+        provider:
+          type: string
+          example: "mock-midtrans"
+        reference:
+          type: string
+      required:
+        - idSantri
+        - amount
+    PaymentTransactionData:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        externalRef:
+          type: string
+        idSantri:
+          type: string
+        amount:
+          type: integer
+          format: int64
+        status:
+          type: string
+        provider:
+          type: string
+        checkoutUrl:
+          type: string
+      required:
+        - id
+        - externalRef
+        - idSantri
+        - amount
+        - status
+        - provider
+    CreatePaymentResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/PaymentTransactionData'
+          required:
+            - data
+    PaymentWebhookRequest:
+      type: object
+      properties:
+        provider:
+          type: string
+        eventId:
+          type: string
+        eventType:
+          type: string
+        externalRef:
+          type: string
+        status:
+          type: string
+        payload:
+          type: object
+          additionalProperties: true
+      required:
+        - eventType
+        - externalRef
+        - status
+    PaymentWebhookData:
+      type: object
+      properties:
+        externalRef:
+          type: string
+        status:
+          type: string
+        processed:
+          type: boolean
+        reason:
+          type: string
+      required:
+        - externalRef
+        - status
+        - processed
+    PaymentWebhookResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/PaymentWebhookData'
+          required:
+            - data
+
+    SnapshotRebuildRequest:
+      type: object
+      properties:
+        hijriPeriod:
+          type: string
+          example: "1447-01"
+      required:
+        - hijriPeriod
+    SnapshotData:
+      type: object
+      properties:
+        hijriPeriod:
+          type: string
+        generatedAt:
+          type: string
+        totalObligations:
+          type: integer
+          format: int64
+        totalPaid:
+          type: integer
+          format: int64
+        pendingCount:
+          type: integer
+          format: int64
+        paymentCount:
+          type: integer
+          format: int64
+      required:
+        - hijriPeriod
+        - generatedAt
+        - totalObligations
+        - totalPaid
+        - pendingCount
+        - paymentCount
+    SnapshotResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/SnapshotData'
+          required:
+            - data
+    StudentSyncStatus:
+      type: object
+      properties:
+        key:
+          type: string
+        status:
+          type: string
+        lastRunAt:
+          type: string
+          format: date-time
+          nullable: true
+        lastSuccessAt:
+          type: string
+          format: date-time
+          nullable: true
+        lastError:
+          type: string
+          nullable: true
+      required:
+        - key
+        - status
+    TriggerStudentSyncData:
+      type: object
+      properties:
+        started:
+          type: boolean
+      required:
+        - started
+    TriggerStudentSyncResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/TriggerStudentSyncData'
+          required:
+            - data
+    StudentSyncStatusResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/StudentSyncStatus'
+          required:
+            - data
+    Meta:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        requestId:
+          type: string
+      required:
+        - timestamp
+    ErrorObject:
+      type: object
+      properties:
+        code:
+          type: string
+        details:
+          description: Optional error details (validation errors, etc.)
+      required:
+        - code
+    ApiResponseBase:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        meta:
+          $ref: '#/components/schemas/Meta'
+      required:
+        - success
+        - meta
+    PaginatedBase:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+        meta:
+          $ref: '#/components/schemas/Meta'
+      required:
+        - success
+        - pagination
+        - meta
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum:
+            - false
+        message:
+          type: string
+        error:
+          $ref: '#/components/schemas/ErrorObject'
+        meta:
+          $ref: '#/components/schemas/Meta'
+      required:
+        - success
+        - message
+        - error
+        - meta
+    Pagination:
+      type: object
+      properties:
+        total_records:
+          type: integer
+        current_page:
+          type: integer
+        total_pages:
+          type: integer
+        next_page:
+          type: integer
+          nullable: true
+        prev_page:
+          type: integer
+          nullable: true
+      required:
+        - total_records
+        - current_page
+        - total_pages
+        - next_page
+        - prev_page
+    DecimalString:
+      type: string
+      description: Decimal serialized as string
+      example: "1000.00"
+    WholeNumberString:
+      type: string
+      description: Numeric string without fractional part
+      example: "1000"
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        idSantri:
+          type: string
+        nis:
+          type: string
+        nama:
+          type: string
+        username:
+          type: string
+        noRekening:
+          type: string
+        level:
+          type: string
+        na:
+          type: string
+        boyong:
+          type: boolean
+      required:
+        - id
+        - idSantri
+        - nis
+        - nama
+        - username
+        - noRekening
+        - level
+        - na
+        - boyong
+    UserWithoutPassword:
+      type: object
+      properties:
+        id:
+          type: integer
+        idSantri:
+          type: string
+        nis:
+          type: string
+        nama:
+          type: string
+        username:
+          type: string
+        noRekening:
+          type: string
+        level:
+          type: string
+        na:
+          type: string
+        boyong:
+          type: boolean
+      required:
+        - id
+        - idSantri
+        - nis
+        - nama
+        - username
+        - noRekening
+        - level
+        - na
+        - boyong
+    UserCredentials:
+      type: object
+      properties:
+        id:
+          type: integer
+        idSantri:
+          type: string
+        noRekening:
+          type: string
+        nis:
+          type: string
+        nama:
+          type: string
+        username:
+          type: string
+        level:
+          type: string
+        iat:
+          type: integer
+          nullable: true
+        exp:
+          type: integer
+          nullable: true
+      required:
+        - id
+        - idSantri
+        - noRekening
+        - nis
+        - nama
+        - username
+        - level
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          maxLength: 255
+        password:
+          type: string
+          maxLength: 255
+      required:
+        - username
+        - password
+    AdminLoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - password
+    RefreshTokenRequest:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+      required:
+        - refreshToken
+    LoginResponseData:
+      type: object
+      properties:
+        userCredentials:
+          $ref: '#/components/schemas/UserCredentials'
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+      required:
+        - userCredentials
+        - accessToken
+        - refreshToken
+    AdminLoginResponseData:
+      type: object
+      properties:
+        user:
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+            username:
+              type: string
+            name:
+              type: string
+            iat:
+              type: integer
+              format: int64
+              nullable: true
+            exp:
+              type: integer
+              format: int64
+              nullable: true
+          required:
+            - id
+            - username
+            - name
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+      required:
+        - user
+        - accessToken
+        - refreshToken
+    AdminUser:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        name:
+          type: string
+        isActive:
+          type: boolean
+      required:
+        - id
+        - username
+        - name
+        - isActive
+    AdminStudent:
+      type: object
+      properties:
+        idSantri:
+          type: string
+        nis:
+          type: string
+        nama:
+          type: string
+        alamat:
+          type: string
+        status:
+          type: string
+      required:
+        - idSantri
+        - nis
+        - nama
+        - alamat
+        - status
+    AdminStoreProduct:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        description:
+          type: string
+        imageUrl:
+          type: string
+        price:
+          type: integer
+          format: int64
+        maxBuy:
+          type: integer
+        available:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - description
+        - imageUrl
+        - price
+        - maxBuy
+        - available
+        - createdAt
+        - updatedAt
+    AdminStoreProductUpsertRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        imageUrl:
+          type: string
+        price:
+          type: integer
+          format: int64
+        maxBuy:
+          type: integer
+        available:
+          type: boolean
+      required:
+        - name
+        - description
+        - imageUrl
+        - price
+        - maxBuy
+        - available
+    AdminStoreUploadSignData:
+      type: object
+      properties:
+        uploadUrl:
+          type: string
+        cloudName:
+          type: string
+        apiKey:
+          type: string
+        timestamp:
+          type: integer
+          format: int64
+        signature:
+          type: string
+        folder:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+      required:
+        - uploadUrl
+        - cloudName
+        - apiKey
+        - timestamp
+        - signature
+        - folder
+        - expiresAt
+    CreateAdminUserRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        name:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - name
+        - password
+    UpdateAdminUserRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        name:
+          type: string
+      required:
+        - username
+        - name
+    UpdateAdminPasswordRequest:
+      type: object
+      properties:
+        password:
+          type: string
+      required:
+        - password
+    RefreshTokenResponseData:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+      required:
+        - accessToken
+        - refreshToken
+    SaldoResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        noRekening:
+          type: string
+          nullable: true
+        saldoTabungan:
+          $ref: '#/components/schemas/WholeNumberString'
+        saldoUpt:
+          $ref: '#/components/schemas/DecimalString'
+        na:
+          type: string
+      required:
+        - id
+        - noRekening
+        - saldoTabungan
+        - saldoUpt
+        - na
+    SaldoUptResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          nullable: true
+        noRekening:
+          type: string
+        totalSaldoSetor:
+          $ref: '#/components/schemas/WholeNumberString'
+        totalSaldoTarik:
+          $ref: '#/components/schemas/WholeNumberString'
+        totalSaldo:
+          $ref: '#/components/schemas/WholeNumberString'
+        na:
+          type: string
+      required:
+        - noRekening
+        - totalSaldoSetor
+        - totalSaldoTarik
+        - totalSaldo
+        - na
+    TransaksiHistoryItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        sandi:
+          type: string
+        noRekening:
+          type: string
+          nullable: true
+        saldo:
+          $ref: '#/components/schemas/WholeNumberString'
+        nominal:
+          $ref: '#/components/schemas/WholeNumberString'
+        tanggal:
+          type: string
+          format: date-time
+        keterangan:
+          type: string
+        na:
+          type: string
+      required:
+        - id
+        - sandi
+        - saldo
+        - nominal
+        - tanggal
+        - keterangan
+        - na
+    UptHistoryItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        idAnggota:
+          type: string
+        transaksi:
+          type: string
+        jenisTransaksi:
+          type: string
+          nullable: true
+        jenisPembayaran:
+          type: string
+          nullable: true
+        saldo:
+          $ref: '#/components/schemas/DecimalString'
+        nominalSetor:
+          $ref: '#/components/schemas/WholeNumberString'
+          nullable: true
+        nominalTarik:
+          $ref: '#/components/schemas/WholeNumberString'
+          nullable: true
+        bulan:
+          type: string
+          nullable: true
+        keterangan:
+          type: string
+          nullable: true
+        tanggal:
+          type: string
+          format: date-time
+        na:
+          type: string
+      required:
+        - id
+        - idAnggota
+        - transaksi
+        - saldo
+        - tanggal
+        - na
+    SyahriyahHistoryItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        sandi:
+          type: string
+        noRekening:
+          type: string
+          nullable: true
+        keterangan:
+          type: string
+        bulan:
+          type: integer
+          nullable: true
+        periode:
+          type: integer
+          nullable: true
+        tanggal:
+          type: string
+          format: date-time
+        nominal:
+          $ref: '#/components/schemas/WholeNumberString'
+        na:
+          type: string
+      required:
+        - id
+        - sandi
+        - keterangan
+        - tanggal
+        - nominal
+        - na
+    PembayaranHistoryItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        sandi:
+          type: string
+        tanggal:
+          type: string
+          format: date-time
+        keterangan:
+          type: string
+        nominal:
+          $ref: '#/components/schemas/DecimalString'
+        na:
+          type: string
+      required:
+        - id
+        - sandi
+        - tanggal
+        - keterangan
+        - nominal
+        - na
+    LatestActivityItem:
+      type: object
+      properties:
+        category:
+          type: string
+          enum:
+            - tabungan
+            - upt
+            - syahriyah
+            - payments
+        id:
+          type: integer
+        tanggal:
+          type: string
+          format: date-time
+        keterangan:
+          type: string
+        nominal:
+          $ref: '#/components/schemas/WholeNumberString'
+        na:
+          type: string
+        detail:
+          type: object
+          description: Original record payload of the category
+      required:
+        - category
+        - id
+        - tanggal
+        - na
+        - detail
+    HealthData:
+      type: object
+      properties:
+        status:
+          type: string
+        uptime:
+          type: number
+        environment:
+          type: string
+      required:
+        - status
+        - uptime
+        - environment
+    LoginResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/LoginResponseData'
+          required:
+            - data
+    AdminLoginResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/AdminLoginResponseData'
+          required:
+            - data
+    AdminUserResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/AdminUser'
+          required:
+            - data
+    AdminUsersPaginatedResponse:
+      allOf:
+        - $ref: '#/components/schemas/PaginatedBase'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/AdminUser'
+          required:
+            - data
+    AdminPasswordUpdateResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                saved:
+                  type: boolean
+              required:
+                - saved
+          required:
+            - data
+    AdminStudentResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/AdminStudent'
+          required:
+            - data
+    AdminStudentsPaginatedResponse:
+      allOf:
+        - $ref: '#/components/schemas/PaginatedBase'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/AdminStudent'
+          required:
+            - data
+    AdminStoreProductResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/AdminStoreProduct'
+          required:
+            - data
+    AdminStoreProductsPaginatedResponse:
+      allOf:
+        - $ref: '#/components/schemas/PaginatedBase'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/AdminStoreProduct'
+          required:
+            - data
+    AdminStoreUploadSignResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/AdminStoreUploadSignData'
+          required:
+            - data
+    StoreProductResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/AdminStoreProduct'
+          required:
+            - data
+    StoreProductsPaginatedResponse:
+      allOf:
+        - $ref: '#/components/schemas/PaginatedBase'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/AdminStoreProduct'
+          required:
+            - data
+    RefreshTokenResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/RefreshTokenResponseData'
+          required:
+            - data
+    LogoutResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              type: object
+              nullable: true
+    UserResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/UserWithoutPassword'
+          required:
+            - data
+    UserDetailResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/User'
+          required:
+            - data
+    UsersPaginatedResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/UserWithoutPassword'
+            pagination:
+              $ref: '#/components/schemas/Pagination'
+          required:
+            - data
+            - pagination
+    SaldoResponseEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/SaldoResponse'
+          required:
+            - data
+    SaldoUptResponseEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/SaldoUptResponse'
+          required:
+            - data
+    TransaksiHistoryResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/TransaksiHistoryItem'
+            pagination:
+              $ref: '#/components/schemas/Pagination'
+          required:
+            - data
+            - pagination
+    UptHistoryResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/UptHistoryItem'
+            pagination:
+              $ref: '#/components/schemas/Pagination'
+          required:
+            - data
+            - pagination
+    SyahriyahHistoryResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/SyahriyahHistoryItem'
+            pagination:
+              $ref: '#/components/schemas/Pagination'
+          required:
+            - data
+            - pagination
+    PembayaranHistoryResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/PembayaranHistoryItem'
+            pagination:
+              $ref: '#/components/schemas/Pagination'
+          required:
+            - data
+            - pagination
+    LatestActivitiesResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/LatestActivityItem'
+    ExternalStudent:
+      type: object
+      properties:
+        id:
+          type: string
+        nis:
+          type: string
+        name:
+          type: string
+      required:
+        - id
+        - nis
+        - name
+    ExternalBaseline:
+      type: object
+      properties:
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+      required:
+        - startDate
+        - endDate
+    ExternalPermitSummary:
+      type: object
+      properties:
+        total:
+          type: integer
+        active:
+          type: integer
+        sick:
+          type: integer
+        permit:
+          type: integer
+      required:
+        - total
+        - active
+        - sick
+        - permit
+    ExternalPermitRecord:
+      type: object
+      properties:
+        id:
+          type: string
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+          nullable: true
+        reason:
+          type: string
+        permitSTatus:
+          type: string
+          enum:
+            - SICK
+            - PERMIT
+        allowedSlots:
+          type: array
+          items:
+            type: integer
+      required:
+        - id
+        - startDate
+        - reason
+        - permitSTatus
+        - allowedSlots
+    ExternalPermitData:
+      type: object
+      properties:
+        student:
+          $ref: '#/components/schemas/ExternalStudent'
+        summary:
+          $ref: '#/components/schemas/ExternalPermitSummary'
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalPermitRecord'
+        baseline:
+          $ref: '#/components/schemas/ExternalBaseline'
+      required:
+        - student
+        - summary
+        - records
+        - baseline
+    ExternalAttendanceSummary:
+      type: object
+      properties:
+        total:
+          type: integer
+        present:
+          type: integer
+        sick:
+          type: integer
+        permit:
+          type: integer
+        absent:
+          type: integer
+      required:
+        - total
+        - present
+        - sick
+        - permit
+        - absent
+    ExternalAttendanceRecord:
+      type: object
+      properties:
+        id:
+          type: string
+        date:
+          type: string
+          format: date-time
+        absentDate:
+          type: string
+        status:
+          type: string
+          enum:
+            - PRESENT
+            - SICK
+            - PERMIT
+            - ABSENT
+        note:
+          type: string
+          nullable: true
+        schedule:
+          type: object
+          properties:
+            subject:
+              type: object
+              properties:
+                name:
+                  type: string
+              required:
+                - name
+            scheduleSlot:
+              type: object
+              properties:
+                slot:
+                  type: integer
+              required:
+                - slot
+          required:
+            - subject
+            - scheduleSlot
+      required:
+        - id
+        - date
+        - absentDate
+        - status
+        - schedule
+    ExternalAttendanceData:
+      type: object
+      properties:
+        student:
+          $ref: '#/components/schemas/ExternalStudent'
+        summary:
+          $ref: '#/components/schemas/ExternalAttendanceSummary'
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalAttendanceRecord'
+        baseline:
+          $ref: '#/components/schemas/ExternalBaseline'
+      required:
+        - student
+        - summary
+        - records
+        - baseline
+    ExternalAcademicSksItem:
+      type: object
+      properties:
+        sksId:
+          type: string
+        sksName:
+          type: string
+        completed:
+          type: boolean
+        score:
+          type: number
+          format: float
+          nullable: true
+      required:
+        - sksId
+        - sksName
+        - completed
+    ExternalAcademicTrack:
+      type: object
+      properties:
+        trackId:
+          type: string
+        trackName:
+          type: string
+        totalSksActive:
+          type: integer
+        completedSksActive:
+          type: integer
+        remainingSksActive:
+          type: integer
+        sks:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalAcademicSksItem'
+      required:
+        - trackId
+        - trackName
+        - totalSksActive
+        - completedSksActive
+        - remainingSksActive
+        - sks
+    ExternalAcademicData:
+      type: object
+      properties:
+        student:
+          $ref: '#/components/schemas/ExternalStudent'
+        tracks:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalAcademicTrack'
+        currentTrack:
+          allOf:
+            - $ref: '#/components/schemas/ExternalAcademicTrack'
+          nullable: true
+      required:
+        - student
+        - tracks
+        - currentTrack
+    ExternalPermitResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/ExternalPermitData'
+          example:
+            success: true
+            message: External permit retrieved
+            data:
+              baseline:
+                endDate: "2026-05-05T16:59:59.999Z"
+                startDate: "2026-04-04T17:00:00.000Z"
+              records:
+                - allowedSlots: [1, 2, 3, 4]
+                  endDate: "2026-04-26T16:59:59.999Z"
+                  id: "b43815ec-5b3a-4fb9-9b0e-c8a404acbbe6"
+                  permitSTatus: "PERMIT"
+                  reason: "Tes Masuk Perguruan Tinggi"
+                  startDate: "2026-04-16T17:00:00.000Z"
+              student:
+                id: "2cfc7a0b-7b08-4dab-9241-5d43644261b9"
+                name: "Habibi Ahmad Mujtaba"
+                nis: "A232908080199"
+              summary:
+                active: 0
+                permit: 1
+                sick: 0
+                total: 1
+    ExternalAttendanceResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/ExternalAttendanceData'
+          example:
+            success: true
+            message: External attendance retrieved
+            data:
+              baseline:
+                endDate: "2026-05-05T16:59:59.999Z"
+                startDate: "2026-04-04T17:00:00.000Z"
+              records:
+                - absentDate: "2026-05-04"
+                  date: "2026-05-04T03:59:12.981Z"
+                  id: "916e0b6f-bcd0-4852-8608-c462213af5da"
+                  note: ""
+                  schedule:
+                    scheduleSlot:
+                      slot: 3
+                    subject:
+                      name: "FATHUL MUIN"
+                  status: "PRESENT"
+              student:
+                id: "2cfc7a0b-7b08-4dab-9241-5d43644261b9"
+                name: "Habibi Ahmad Mujtaba"
+                nis: "A232908080199"
+              summary:
+                absent: 1
+                permit: 22
+                present: 10
+                sick: 0
+                total: 33
+    ExternalAcademicResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/ExternalAcademicData'
+          example:
+            success: true
+            message: External academic retrieved
+            data:
+              student:
+                id: "2cfc7a0b-7b08-4dab-9241-5d43644261b9"
+                name: "Habibi Ahmad Mujtaba"
+                nis: "A232908080199"
+              currentTrack:
+                completedSksActive: 9
+                remainingSksActive: 4
+                totalSksActive: 13
+                trackId: "b0c1d2e3-f4a5-6789-0123-bcdef1234567"
+                trackName: "MUNAKAHAT"
+                sks:
+                  - completed: true
+                    score: 90
+                    sksId: "089904de-f191-4fc3-b57a-1534a2c8917c"
+                    sksName: "ALFIYAH 7"
+              tracks:
+                - completedSksActive: 0
+                  remainingSksActive: 15
+                  totalSksActive: 15
+                  trackId: "f8a9b0c1-d2e3-4567-8901-0abcdef12345"
+                  trackName: "UBUDIYAH"
+                  sks: []
+          required:
+            - data
+    HealthResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/HealthData'
+          required:
+            - data
+    CalendarEventRequest:
+      type: object
+      required: [code, title, category, dateRule, scope]
+      properties:
+        code: {type: string, maxLength: 100, example: MAWLID_NABI}
+        title: {type: string, maxLength: 255}
+        summary: {type: string, nullable: true}
+        description: {type: string, nullable: true}
+        category:
+          $ref: '#/components/schemas/CalendarCategory'
+        dateRule:
+          $ref: '#/components/schemas/CalendarDateRule'
+        reference:
+          allOf:
+            - $ref: '#/components/schemas/CalendarReference'
+          nullable: true
+        scope: {type: string, enum: [NATIONAL, PESANTREN]}
+        location: {type: string, nullable: true}
+        priority: {type: string, enum: [LOW, NORMAL, HIGH], default: NORMAL}
+        status: {type: string, enum: [DRAFT, PUBLISHED, ARCHIVED], default: DRAFT}
+    CalendarEventPatchRequest:
+      type: object
+      description: Partial update; omitted fields retain their current values. Send reference=null to clear it.
+      properties:
+        code: {type: string, maxLength: 100}
+        title: {type: string, maxLength: 255}
+        summary: {type: string, nullable: true}
+        description: {type: string, nullable: true}
+        category: {$ref: '#/components/schemas/CalendarCategory'}
+        dateRule: {$ref: '#/components/schemas/CalendarDateRule'}
+        reference:
+          allOf:
+            - $ref: '#/components/schemas/CalendarReference'
+          nullable: true
+        scope: {type: string, enum: [NATIONAL, PESANTREN]}
+        location: {type: string, nullable: true}
+        priority: {type: string, enum: [LOW, NORMAL, HIGH]}
+        status: {type: string, enum: [DRAFT, PUBLISHED, ARCHIVED]}
+    CalendarCategory:
+      type: object
+      required: [code]
+      properties:
+        code: {type: string, enum: [ISLAMIC, NATIONAL, ACADEMIC, PESANTREN, PAYMENT, HOLIDAY, ANNOUNCEMENT, OTHER]}
+        label: {type: string}
+        colorToken: {type: string}
+        icon: {type: string}
+    CalendarDateRule:
+      type: object
+      required: [basis, recurrence]
+      description: For GREGORIAN use gregorian; for HIJRI use hijri. ONCE cannot use range.
+      properties:
+        basis: {type: string, enum: [GREGORIAN, HIJRI]}
+        recurrence: {type: string, enum: [ONCE, YEARLY]}
+        gregorian:
+          $ref: '#/components/schemas/CalendarGregorianRule'
+        hijri:
+          $ref: '#/components/schemas/CalendarHijriRule'
+        range:
+          $ref: '#/components/schemas/CalendarYearRange'
+    CalendarGregorianRule:
+      type: object
+      properties:
+        month: {type: integer, minimum: 1, maximum: 12}
+        day: {type: integer, minimum: 1, maximum: 31}
+        date: {type: string, format: date}
+    CalendarHijriRule:
+      type: object
+      properties:
+        year: {type: integer, minimum: 1}
+        month: {type: integer, minimum: 1, maximum: 12}
+        day: {type: integer, minimum: 1, maximum: 30}
+    CalendarYearRange:
+      type: object
+      properties:
+        startYear: {type: integer, nullable: true}
+        endYear: {type: integer, nullable: true}
+    CalendarReference:
+      type: object
+      required: [basis, year, usage]
+      properties:
+        basis: {type: string, enum: [GREGORIAN, HIJRI]}
+        year: {type: integer, minimum: 1}
+        usage: {type: string, enum: [AGE, ANNIVERSARY_COUNT]}
+    CalendarEvent:
+      allOf:
+        - $ref: '#/components/schemas/CalendarEventRequest'
+        - type: object
+          required: [id, updatedAt]
+          properties:
+            id: {type: string, format: uuid}
+            updatedAt: {type: string, format: date-time}
+            createdAt: {type: string, format: date-time}
+    CalendarResponseMeta:
+      type: object
+      required: [requestId, generatedAt, schemaVersion, version, updatedAt]
+      properties:
+        requestId: {type: string}
+        generatedAt: {type: string, format: date-time}
+        schemaVersion: {type: integer, example: 1}
+        version: {type: string, example: calendar-events-v1}
+        updatedAt: {type: string, format: date-time, nullable: true}
+    CalendarEventsResponse:
+      type: object
+      required: [success, data, meta]
+      properties:
+        success: {type: boolean, enum: [true]}
+        message: {type: string}
+        data:
+          type: object
+          required: [items, count]
+          properties:
+            items:
+              type: array
+              items: {$ref: '#/components/schemas/CalendarEvent'}
+            count: {type: integer}
+        meta: {$ref: '#/components/schemas/CalendarResponseMeta'}
+    AdminCalendarEventsResponse:
+      allOf:
+        - $ref: '#/components/schemas/PaginatedBase'
+        - type: object
+          required: [data]
+          properties:
+            data:
+              type: array
+              items: {$ref: '#/components/schemas/CalendarEvent'}
+    CalendarEventResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          required: [data]
+          properties:
+            data: {$ref: '#/components/schemas/CalendarEvent'}
+    CalendarEventArchiveResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          required: [data]
+          properties:
+            data:
+              type: object
+              required: [id, status]
+              properties:
+                id: {type: string, format: uuid}
+                status: {type: string, enum: [ARCHIVED]}

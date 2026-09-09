@@ -1,0 +1,4 @@
+interface:
+  display_name: "Amtsilati Frontend Architecture"
+  short_description: "Maintain frontend architecture and project boundaries"
+  default_prompt: "Use $amtsilati-frontend-architecture to plan or implement a maintainable frontend change."

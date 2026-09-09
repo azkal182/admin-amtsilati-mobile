@@ -1,0 +1,4 @@
+interface:
+  display_name: "Amtsilati Frontend Quality"
+  short_description: "Verify UI states, tests, accessibility, and gates"
+  default_prompt: "Use $amtsilati-frontend-quality to review or verify an Amtsilati frontend change."

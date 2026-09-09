@@ -1,0 +1,4 @@
+interface:
+  display_name: "Amtsilati Admin API"
+  short_description: "Integrate frontend with the admin OpenAPI contract"
+  default_prompt: "Use $amtsilati-admin-api to implement or review an admin API integration."

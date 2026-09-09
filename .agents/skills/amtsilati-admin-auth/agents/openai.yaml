@@ -1,0 +1,4 @@
+interface:
+  display_name: "Amtsilati Admin Auth"
+  short_description: "Implement admin JWT, session, and RBAC UX"
+  default_prompt: "Use $amtsilati-admin-auth to implement or review admin authentication and permission behavior."
