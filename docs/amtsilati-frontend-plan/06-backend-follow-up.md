@@ -94,5 +94,5 @@ Pada beberapa percobaan frontend dev server, backend sempat mengembalikan `ERR_C
 ## Status dampak ke gate
 
 - Gate 4 API/mutation: lulus untuk sync, conflict, tariff, snapshot, assign, dan release. Temuan token diabaikan sesuai keputusan proyek.
-- Gate 6.1: publish/unpublish enforcement dan cleanup prefix dilaporkan selesai; tersisa verifikasi browser mutation bila dijadikan syarat release.
-- Gate 7: quality/browser suite frontend lulus; release readiness masih menunggu Store create/upload aktual, browser E2E mutation seluruh modul, keyboard/focus review, dan keputusan `knip`.
+- Gate 6.1: API mutation lulus dan browser create/edit/archive lulus; browser publish UI serta cleanup fixture terbaru masih pending.
+- Gate 7: quality/browser suite frontend lulus; release readiness masih menunggu upload Cloudinary aktual, browser E2E mutation seluruh modul, keyboard/focus review, cleanup fixture Events terbaru, dan keputusan `knip`.

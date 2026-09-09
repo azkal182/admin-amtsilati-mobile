@@ -94,6 +94,8 @@ Lulus jika login, protected route, refresh, logout, 401, 403, dan session expire
 
 ### Gate 3
 
+Status terbaru: API RBAC sudah lulus dengan user fixture tanpa `users.manage` (`403`), dan cleanup `E2E_USERS_` telah dikonfirmasi user. Browser mutation Admin Users belum diverifikasi secara runtime.
+
 Retest API tambahan: fixture `E2E_USERS_20260909` dengan role `event_editor` tidak memiliki `users.manage` dan menerima `403` pada list Admin Users. Browser mutation dan cleanup fixture user masih tersisa.
 
 Lulus jika semua CRUD admin user yang tersedia dan read-only student flow berjalan terhadap API/dev mock, dengan validasi dan error state lengkap. Implementasi Fase 3 selesai pada 2026-09-09: endpoint Admin Users dan Students terpetakan ke admin client, form tervalidasi, query state tersimpan di URL, mutation meng-invalidate list, dan Students memiliki adapter untuk respons backend aktual yang masih menggunakan field `IDSantri`, `NIS`, `Nama`, `Alamat`, `Status` alih-alih casing OpenAPI. Unit suite (23 test), lint, format check, dan build berhasil. Smoke backend untuk list Admin Users, list Students, dan detail Students menghasilkan `200`; smoke browser memverifikasi list Admin Users serta filter Students. Mutation Admin Users create sudah memiliki fixture retained dari pengujian sebelumnya; update profile dan update password diuji secara reversible pada fixture id 4 dan berhasil di-restore. Gate 3 masih memerlukan verifikasi browser mutation, 403 dengan akun tanpa `users.manage`, serta keputusan cleanup fixture dan penyelarasan contract casing Students.
@@ -142,6 +144,8 @@ Lulus jika sync, tariff, snapshot, dan pengurus dapat dijalankan tanpa memakai e
 - [x] Error upload dan error product dibedakan.
 
 ### Gate 5
+
+Status terbaru: list, signed upload parameters, serta create/update product fixture sudah lulus melalui API. Cleanup `E2E_STORE_` telah dikonfirmasi user. Upload file Cloudinary aktual menunggu fitur delete asset backend selesai.
 
 Retest API tambahan: create dan update fixture `E2E_STORE_20260909` berhasil dengan status `200`; signed upload parameters juga berhasil dengan status `200`. Upload file aktual dan cleanup fixture Store masih tersisa.
 
@@ -200,7 +204,7 @@ Implementasi mutation sudah tersedia di frontend, tetapi create, edit, publish/u
 
 ### Gate 6.1
 
-Status: **ready to close** pada 2026-09-09. Create/edit/archive Gregorian dan Hijri, validasi invalid range, status error, publish/unpublish dengan `events.publish`, dan cleanup fixture prefix `E2E_EVENTS_` sudah ditangani. Penutupan formal dapat dilakukan setelah browser mutation E2E bila itu diwajibkan sebagai release gate.
+Status: **pending** pada 2026-09-09. API create/edit/publish/unpublish/archive lulus. Browser nyata juga berhasil login, create, edit, dan archive event; percobaan publish dari UI masih perlu diulang dengan selector Radix combobox yang tepat. Fixture browser terbaru sudah diarsipkan, tetapi cleanup prefix `E2E_EVENTS_` perlu dijalankan ulang setelah pengujian terbaru.
 
 ## Fase 7 — Hardening, testing, dan release readiness
 
@@ -225,4 +229,4 @@ Status: **ready to close** pada 2026-09-09. Create/edit/archive Gregorian dan Hi
 
 ### Gate 7
 
-Fase 7 audit otomatis diulang pada 2026-09-09: format check, lint, 48 unit test, TypeScript, dan production build berhasil. Browser suite berhasil setelah Chromium Playwright dipasang: 7 test files dan 57 test pass. Smoke browser nyata memverifikasi protected redirect, login, seluruh route aktif, dan mobile layout; viewport 390px tidak memiliki horizontal overflow pada route aktif setelah containment layout diperbaiki. API smoke lintas modul berhasil: users, students, store products, signed upload, sync status, tariffs, pengurus, snapshot rebuild, serta event publish/unpublish/archive. CORS frontend `204` dan mengizinkan `http://localhost:5173`. `knip` tetap non-zero dan melaporkan 15 komponen foundation, 6 dependency, serta beberapa export yang belum dipakai; item tersebut belum dihapus karena masih fondasi reusable dan memerlukan review cleanup terpisah. Gate 7 masih pending karena cleanup fixture, Store create/upload actual, dan browser E2E mutation seluruh modul.
+Fase 7 audit otomatis diulang pada 2026-09-09: format check, lint, 48 unit test, TypeScript, dan production build berhasil. Browser suite berhasil setelah Chromium Playwright dijalankan di luar sandbox: 7 test files dan 57 test pass. Smoke browser nyata memverifikasi protected redirect, login, seluruh route aktif, mobile layout, serta Events create/edit/archive; viewport 390px tidak memiliki horizontal overflow pada route aktif. API smoke lintas modul berhasil: users, students, store products, signed upload, Store create/update, sync status, tariffs, pengurus, snapshot rebuild, serta event publish/unpublish/archive dan RBAC Admin Users `403`. CORS frontend `204` dan mengizinkan `http://localhost:5173`. `knip` tetap non-zero dan melaporkan 15 komponen foundation, 6 dependency, serta beberapa export yang belum dipakai; item tersebut belum dihapus karena masih fondasi reusable dan memerlukan review cleanup terpisah. Gate 7 masih pending karena upload file Cloudinary aktual, browser mutation Admin Users/Store/Events penuh, keyboard/focus review, cleanup fixture Events terbaru, dan keputusan `knip`.
