@@ -44,7 +44,7 @@ import { ThemeSwitch } from '@/components/theme-switch'
 import {
   adminAccessApi,
   listAdminUsers,
-  createAdminUser,
+  createAdminUserWithRole,
   updateAdminPassword,
   updateAdminUser,
 } from './api'
@@ -73,7 +73,7 @@ export function AdminUsersPage() {
   const rolesQuery = useQuery({
     queryKey: ['admin-roles'],
     queryFn: adminAccessApi.roles,
-    enabled: !!accessUser,
+    enabled: !!accessUser || editor === 'new',
   })
   const permissionsQuery = useQuery({
     queryKey: ['admin-permissions'],
@@ -90,7 +90,13 @@ export function AdminUsersPage() {
     onError: handleServerError,
   }
   const createMutation = useMutation({
-    mutationFn: createAdminUser,
+    mutationFn: ({
+      input,
+      roleCode,
+    }: {
+      input: { username: string; name: string; password: string }
+      roleCode?: string
+    }) => createAdminUserWithRole(input, roleCode),
     ...mutationOptions,
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey })
@@ -349,14 +355,18 @@ export function AdminUsersPage() {
       <AdminUserDialog
         key={editor === 'new' ? 'new' : (editor?.id ?? 'closed')}
         value={editor}
+        roles={(rolesQuery.data?.data ?? []) as AdminRole[]}
         pending={createMutation.isPending || updateMutation.isPending}
         onClose={() => setEditor(null)}
         onSubmit={(input) => {
           if (editor === 'new')
             createMutation.mutate({
-              username: input.username,
-              name: input.name,
-              password: input.password ?? '',
+              input: {
+                username: input.username,
+                name: input.name,
+                password: input.password ?? '',
+              },
+              roleCode: input.roleCode,
             })
           else if (editor)
             updateMutation.mutate({
@@ -424,23 +434,27 @@ function StateMessage({
 
 function AdminUserDialog({
   value,
+  roles,
   pending,
   onClose,
   onSubmit,
 }: {
   value: AdminUser | 'new' | null
+  roles: AdminRole[]
   pending: boolean
   onClose: () => void
   onSubmit: (input: {
     username: string
     name: string
     password?: string
+    roleCode?: string
   }) => void
 }) {
   const isNew = value === 'new'
   const [username, setUsername] = useState('')
   const [name, setName] = useState('')
   const [password, setPassword] = useState('')
+  const [roleCode, setRoleCode] = useState('')
   const [error, setError] = useState('')
   const open = value !== null
   function reset(next: boolean) {
@@ -448,6 +462,7 @@ function AdminUserDialog({
       setUsername(value === 'new' ? '' : (value?.username ?? ''))
       setName(value === 'new' ? '' : (value?.name ?? ''))
       setPassword('')
+      setRoleCode('')
       setError('')
     }
   }
@@ -496,6 +511,29 @@ function AdminUserDialog({
               />
             </div>
           )}
+          {isNew && (
+            <div className='grid gap-2'>
+              <Label htmlFor='admin-role'>Role awal (opsional)</Label>
+              <select
+                id='admin-role'
+                className='h-9 w-full rounded-md border bg-background px-3 text-sm'
+                value={roleCode}
+                onChange={(event) => setRoleCode(event.target.value)}
+              >
+                <option value=''>Tanpa role</option>
+                {roles.map((role) => (
+                  <option key={role.code} value={role.code}>
+                    {role.name} ({role.code})
+                  </option>
+                ))}
+              </select>
+              {roles.length === 0 && (
+                <p className='text-xs text-muted-foreground'>
+                  Role belum tersedia dari server.
+                </p>
+              )}
+            </div>
+          )}
           {error && (
             <p role='alert' className='text-sm text-destructive'>
               {error}
@@ -518,7 +556,10 @@ function AdminUserDialog({
                 setError(result.error.issues[0]?.message ?? 'Form tidak valid.')
                 return
               }
-              onSubmit(result.data)
+              onSubmit({
+                ...result.data,
+                roleCode: isNew ? roleCode : undefined,
+              })
             }}
           >
             {pending ? 'Menyimpan...' : 'Simpan'}

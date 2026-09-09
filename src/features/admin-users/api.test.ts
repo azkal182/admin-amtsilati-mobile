@@ -3,6 +3,7 @@ import { adminApi } from '@/api/admin-client'
 import {
   adminAccessApi,
   createAdminUser,
+  createAdminUserWithRole,
   listAdminUsers,
   updateAdminPassword,
   updateAdminUser,
@@ -74,6 +75,31 @@ describe('admin users API mapping', () => {
       '/internal/admin/users/7/password',
       { password: 'password456' }
     )
+    vi.restoreAllMocks()
+  })
+
+  it('creates an admin before assigning the optional initial role', async () => {
+    const post = vi
+      .spyOn(adminApi, 'post')
+      .mockImplementation(async (path) =>
+        path === '/internal/admin/users'
+          ? ({ data: { id: 12 }, success: true, meta: {} } as never)
+          : ({ data: { saved: true }, success: true, meta: {} } as never)
+      )
+
+    await createAdminUserWithRole(
+      { username: 'operator', name: 'Operator', password: 'password123' },
+      'event_editor'
+    )
+
+    expect(post).toHaveBeenNthCalledWith(1, '/internal/admin/users', {
+      username: 'operator',
+      name: 'Operator',
+      password: 'password123',
+    })
+    expect(post).toHaveBeenNthCalledWith(2, '/internal/admin/users/12/roles', {
+      roleCode: 'event_editor',
+    })
     vi.restoreAllMocks()
   })
 })

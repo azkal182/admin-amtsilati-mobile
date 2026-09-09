@@ -1,8 +1,9 @@
-import { useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Link, useNavigate, useSearch } from '@tanstack/react-router'
-import { Eye, RefreshCw, Search } from 'lucide-react'
+import { Eye, RefreshCw } from 'lucide-react'
 import { ApiRequestError } from '@/api/types'
+import { useDebouncedValue } from '@/hooks/use-debounced-value'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -36,6 +37,7 @@ export function StudentsPage() {
   const search = useSearch({ from: '/_authenticated/students' })
   const navigate = useNavigate({ from: '/students' })
   const [searchText, setSearchText] = useState(search.search)
+  const debouncedSearch = useDebouncedValue(searchText)
   const query = useQuery({
     queryKey: ['students', search],
     queryFn: () => listStudents(search),
@@ -44,6 +46,12 @@ export function StudentsPage() {
   const pagination = query.data?.pagination
   const forbidden =
     query.error instanceof ApiRequestError && query.error.status === 403
+  useEffect(() => {
+    if (debouncedSearch === search.search) return
+    void navigate({
+      search: (previous) => ({ ...previous, search: debouncedSearch, page: 1 }),
+    })
+  }, [debouncedSearch, navigate, search.search])
   function updateSearch(next: Partial<typeof search>) {
     void navigate({ search: (previous) => ({ ...previous, ...next }) })
   }
@@ -77,13 +85,7 @@ export function StudentsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className='space-y-4'>
-            <form
-              className='flex flex-wrap gap-2'
-              onSubmit={(e) => {
-                e.preventDefault()
-                updateSearch({ search: searchText, page: 1 })
-              }}
-            >
+            <div className='flex flex-wrap gap-2'>
               <Label htmlFor='student-search' className='sr-only'>
                 Cari santri
               </Label>
@@ -112,10 +114,7 @@ export function StudentsPage() {
                   <SelectItem value='nonaktif'>Nonaktif</SelectItem>
                 </SelectContent>
               </Select>
-              <Button type='submit' variant='outline' aria-label='Cari'>
-                <Search />
-              </Button>
-            </form>
+            </div>
             {query.isPending ? (
               <Loading />
             ) : forbidden ? (

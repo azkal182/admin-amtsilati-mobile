@@ -28,6 +28,23 @@ export function createAdminUser(input: Required<AdminUserInput>) {
   return adminApi.post<AdminUser>('/internal/admin/users', input)
 }
 
+export async function createAdminUserWithRole(
+  input: Required<AdminUserInput>,
+  roleCode?: string
+) {
+  const response = await createAdminUser(input)
+  if (roleCode) {
+    try {
+      await adminAccessApi.assignRole(response.data.id, roleCode)
+    } catch {
+      throw new Error(
+        'Administrator berhasil dibuat, tetapi role awal gagal ditambahkan. Tambahkan role melalui menu Akses.'
+      )
+    }
+  }
+  return response
+}
+
 export function updateAdminUser(
   id: number,
   input: Omit<AdminUserInput, 'password'>

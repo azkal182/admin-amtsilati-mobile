@@ -10,6 +10,7 @@ import {
 import { toast } from 'sonner'
 import { ApiRequestError, type ApiEnvelope } from '@/api/types'
 import { handleServerError } from '@/lib/handle-server-error'
+import { useDebouncedValue } from '@/hooks/use-debounced-value'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -56,6 +57,8 @@ export function SyahriyahPage() {
   const [period, setPeriod] = useState(defaultPeriod)
   const [tariffPeriod, setTariffPeriod] = useState('')
   const [studentId, setStudentId] = useState('')
+  const [studentSearch, setStudentSearch] = useState('')
+  const debouncedStudentSearch = useDebouncedValue(studentSearch)
   const [syncPolling, setSyncPolling] = useState(false)
   const [syncTimedOut, setSyncTimedOut] = useState(false)
   const [releaseTarget, setReleaseTarget] = useState<string | null>(null)
@@ -86,9 +89,15 @@ export function SyahriyahPage() {
     queryFn: () => syahriyahApi.pengurus(studentId),
   })
   const studentsQuery = useQuery({
-    queryKey: ['students-picker'],
+    queryKey: ['students-picker', debouncedStudentSearch],
     queryFn: () =>
-      listStudents({ page: 1, limit: 100, search: '', status: '' }),
+      listStudents({
+        page: 1,
+        limit: 20,
+        search: debouncedStudentSearch.trim(),
+        status: '',
+      }),
+    enabled: debouncedStudentSearch.trim().length >= 2,
   })
   const syncMutation = useMutation({
     mutationFn: syahriyahApi.sync,
@@ -253,6 +262,10 @@ export function SyahriyahPage() {
           <PengurusCard
             query={pengurusQuery}
             students={studentsQuery.data?.data ?? []}
+            studentSearch={studentSearch}
+            setStudentSearch={setStudentSearch}
+            studentSearchPending={studentsQuery.isFetching}
+            studentSearchError={studentsQuery.isError}
             studentId={studentId}
             setStudentId={setStudentId}
             assignMutation={assignMutation}
@@ -586,6 +599,10 @@ function Metric({
 function PengurusCard({
   query,
   students,
+  studentSearch,
+  setStudentSearch,
+  studentSearchPending,
+  studentSearchError,
   studentId,
   setStudentId,
   assignMutation,
@@ -595,6 +612,10 @@ function PengurusCard({
 }: {
   query: QueryState<Pengurus[]>
   students: { idSantri: string; nama: string }[]
+  studentSearch: string
+  setStudentSearch: (value: string) => void
+  studentSearchPending: boolean
+  studentSearchError: boolean
   studentId: string
   setStudentId: (value: string) => void
   assignMutation: MutationState<{
@@ -643,21 +664,69 @@ function PengurusCard({
             assignMutation.mutate(result.data)
           }}
         >
-          <div className='sm:col-span-3'>
+          <div className='relative sm:col-span-3'>
             <Label htmlFor='pengurus-student'>Pilih santri</Label>
-            <select
+            <Input
               id='pengurus-student'
-              className='h-9 w-full rounded-md border bg-background px-3 text-sm'
-              value={studentId}
-              onChange={(e) => setStudentId(e.target.value)}
-            >
-              <option value=''>Pilih santri...</option>
-              {students.map((student) => (
-                <option key={student.idSantri} value={student.idSantri}>
-                  {student.idSantri} — {student.nama}
-                </option>
-              ))}
-            </select>
+              role='combobox'
+              aria-expanded={studentSearch.trim().length >= 2 && !studentId}
+              aria-controls='pengurus-student-options'
+              autoComplete='off'
+              placeholder='Ketik minimal 2 karakter...'
+              value={studentSearch}
+              onChange={(e) => {
+                setStudentSearch(e.target.value)
+                setStudentId('')
+              }}
+            />
+            {studentSearchPending && (
+              <p className='mt-1 text-xs text-muted-foreground'>Mencari...</p>
+            )}
+            {studentSearchError && (
+              <p role='alert' className='mt-1 text-xs text-destructive'>
+                Gagal mencari santri.
+              </p>
+            )}
+            {studentSearch.trim().length >= 2 &&
+              !studentId &&
+              !studentSearchPending &&
+              !studentSearchError && (
+                <div
+                  id='pengurus-student-options'
+                  role='listbox'
+                  className='absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border bg-popover p-1 shadow-md'
+                >
+                  {students.length > 0 ? (
+                    students.map((student) => (
+                      <button
+                        key={student.idSantri}
+                        type='button'
+                        role='option'
+                        aria-selected={false}
+                        className='flex w-full items-start justify-between gap-3 rounded-sm px-3 py-2 text-left text-sm hover:bg-accent'
+                        onClick={() => {
+                          setStudentId(student.idSantri)
+                          setStudentSearch(
+                            `${student.idSantri} — ${student.nama}`
+                          )
+                        }}
+                      >
+                        <span className='font-medium'>{student.nama}</span>
+                        <span className='text-muted-foreground'>
+                          {student.idSantri}
+                        </span>
+                      </button>
+                    ))
+                  ) : (
+                    <p
+                      role='status'
+                      className='px-3 py-2 text-sm text-muted-foreground'
+                    >
+                      Santri tidak ditemukan.
+                    </p>
+                  )}
+                </div>
+              )}
           </div>
           <div>
             <Label htmlFor='pengurus-start'>Mulai periode</Label>
