@@ -22,8 +22,10 @@ import {
 } from '@/components/feedback'
 import { listPaymentMethods, updatePaymentMethod } from './api'
 import { PaymentsLayout } from './layout'
+import { PaymentMethodEditor } from './method-editor'
 import { usePaymentPermissions } from './permissions'
 import { paymentQueryKeys } from './query-keys'
+import type { AdminPaymentMethod, PaymentMethodUpdate } from './types'
 
 export function PaymentMethodsPage() {
   const access = usePaymentPermissions()
@@ -32,6 +34,7 @@ export function PaymentMethodsPage() {
     code: string
     active: boolean
   } | null>(null)
+  const [editing, setEditing] = useState<AdminPaymentMethod | null>(null)
   const query = useQuery({
     queryKey: paymentQueryKeys.methods(),
     queryFn: listPaymentMethods,
@@ -42,6 +45,20 @@ export function PaymentMethodsPage() {
       updatePaymentMethod(code, { active }),
     onSuccess: async () => {
       await client.invalidateQueries({ queryKey: paymentQueryKeys.all })
+      toast.success('Metode pembayaran diperbarui.')
+    },
+  })
+  const editMutation = useMutation({
+    mutationFn: ({
+      code,
+      input,
+    }: {
+      code: string
+      input: PaymentMethodUpdate
+    }) => updatePaymentMethod(code, input),
+    onSuccess: async () => {
+      await client.invalidateQueries({ queryKey: paymentQueryKeys.all })
+      setEditing(null)
       toast.success('Metode pembayaran diperbarui.')
     },
   })
@@ -84,6 +101,16 @@ export function PaymentMethodsPage() {
           <CardTitle>Daftar metode</CardTitle>
         </CardHeader>
         <CardContent>
+          {editing && (
+            <PaymentMethodEditor
+              method={editing}
+              pending={editMutation.isPending}
+              onCancel={() => setEditing(null)}
+              onSubmit={(input) =>
+                editMutation.mutate({ code: editing.code, input })
+              }
+            />
+          )}
           {query.isPending ? (
             <LoadingState description='Memuat metode pembayaran...' />
           ) : query.isError ? (
@@ -141,6 +168,15 @@ export function PaymentMethodsPage() {
                           }
                         >
                           {method.active ? 'Nonaktifkan' : 'Aktifkan'}
+                        </Button>
+                      )}
+                      {access.canManage && (
+                        <Button
+                          size='sm'
+                          variant='ghost'
+                          onClick={() => setEditing(method)}
+                        >
+                          Edit
                         </Button>
                       )}
                     </TableCell>
