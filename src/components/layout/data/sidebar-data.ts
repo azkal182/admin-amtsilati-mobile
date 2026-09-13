@@ -2,6 +2,7 @@ import {
   Activity,
   BookOpen,
   CalendarDays,
+  CreditCard,
   LayoutDashboard,
   Palette,
   Settings,
@@ -24,6 +25,7 @@ export const sidebarData: SidebarData = {
         { title: 'Syahriyah', url: '/syahriyah', icon: Activity },
         { title: 'Store', url: '/store/products', icon: ShoppingBag },
         { title: 'Calendar Events', url: '/events', icon: CalendarDays },
+        { title: 'Payments', url: '/payments', icon: CreditCard },
       ],
     },
     {

@@ -28,6 +28,7 @@ Sebuah halaman dianggap selesai jika:
 | Pengurus | `/internal/admin/syahriyah/pengurus*` | `syahriyah.manage` |
 | Store | `/internal/admin/store/*` | `store.manage` |
 | Events | `/internal/admin/events*` | `events.manage`, publish memakai `events.publish` |
+| Payments | `/internal/admin/payments/*` | `payments.read`, `payments.manage`, `payments.reconcile`, `payments.webhook.retry` |
 | Dashboard | `/health` dan query modul tersedia | sesuai modul |
 
 ## Contract change policy

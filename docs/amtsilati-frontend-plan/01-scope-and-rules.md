@@ -11,6 +11,7 @@ Frontend ini adalah panel backoffice untuk operator/staff Amtsilati. Modul aktif
 5. Store: product management dan signed upload.
 6. Calendar Events: list, detail, create, edit, dan archive.
 7. Auth, session expired, forbidden, error state, dan settings dasar.
+8. Payments: monitoring invoice, delivery, Direct Payment methods, dan webhook consumers.
 
 Domain content dan calendar adjustment belum dibuat karena belum memiliki kontrak endpoint aktif.
 
@@ -24,6 +25,7 @@ Domain content dan calendar adjustment belum dibuat karena belum memiliki kontra
 - `/api/v1/internal/admin/syahriyah/*`
 - `/api/v1/internal/admin/store/*`
 - `/api/v1/internal/admin/events*`
+- `/api/v1/internal/admin/payments/*`
 - `/api/v1/health`
 
 ### Tidak boleh digunakan untuk panel admin

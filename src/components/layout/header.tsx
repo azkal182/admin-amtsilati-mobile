@@ -79,6 +79,7 @@ function getPageLabel(pathname: string) {
   if (pathname.startsWith('/syahriyah')) return 'Syahriyah'
   if (pathname.startsWith('/store/products')) return 'Store'
   if (pathname.startsWith('/events')) return 'Calendar Events'
+  if (pathname.startsWith('/payments')) return 'Payments'
   if (pathname.startsWith('/settings/appearance')) return 'Appearance'
   if (pathname.startsWith('/settings')) return 'Profile'
   return 'Admin Panel'

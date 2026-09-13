@@ -35,4 +35,4 @@ bun run build
 bun run test
 ```
 
-Implementasi dilakukan bertahap sesuai [planning](docs/amtsilati-frontend-plan/README.md). Saat ini project berada pada Fase 0: audit dan cleanup template.
+Implementasi dilakukan bertahap sesuai [planning](docs/amtsilati-frontend-plan/README.md). Modul Payments sudah memiliki route dan UX foundation; verifikasi runtime backend tetap mengikuti gate fase terkait.

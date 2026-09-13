@@ -13,6 +13,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedSyahriyahRouteImport } from './routes/_authenticated/syahriyah'
 import { Route as AuthenticatedStudentsRouteImport } from './routes/_authenticated/students'
+import { Route as AuthenticatedPaymentsRouteImport } from './routes/_authenticated/payments'
 import { Route as AuthenticatedEventsRouteImport } from './routes/_authenticated/events'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin-users'
 import { Route as errors503RouteImport } from './routes/(errors)/503'
@@ -24,15 +25,19 @@ import { Route as authSignInRouteImport } from './routes/(auth)/sign-in'
 import { Route as authSessionExpiredRouteImport } from './routes/(auth)/session-expired'
 import { Route as AuthenticatedSettingsRouteRouteImport } from './routes/_authenticated/settings/route'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
+import { Route as AuthenticatedPaymentsIndexRouteImport } from './routes/_authenticated/payments/index'
 import { Route as AuthenticatedEventsIndexRouteImport } from './routes/_authenticated/events/index'
 import { Route as AuthenticatedStudentsIdSantriRouteImport } from './routes/_authenticated/students/$idSantri'
 import { Route as AuthenticatedSettingsAppearanceRouteImport } from './routes/_authenticated/settings/appearance'
+import { Route as AuthenticatedPaymentsMethodsRouteImport } from './routes/_authenticated/payments/methods'
+import { Route as AuthenticatedPaymentsConsumersRouteImport } from './routes/_authenticated/payments/consumers'
 import { Route as AuthenticatedEventsNewRouteImport } from './routes/_authenticated/events/new'
 import { Route as AuthenticatedEventsIdRouteImport } from './routes/_authenticated/events/$id'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
 import { Route as AuthenticatedStoreProductsIndexRouteImport } from './routes/_authenticated/store/products/index'
 import { Route as AuthenticatedStoreProductsNewRouteImport } from './routes/_authenticated/store/products/new'
 import { Route as AuthenticatedStoreProductsIdRouteImport } from './routes/_authenticated/store/products/$id'
+import { Route as AuthenticatedPaymentsInvoicesIdRouteImport } from './routes/_authenticated/payments/invoices/$id'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -51,6 +56,11 @@ const AuthenticatedSyahriyahRoute = AuthenticatedSyahriyahRouteImport.update({
 const AuthenticatedStudentsRoute = AuthenticatedStudentsRouteImport.update({
   id: '/students',
   path: '/students',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPaymentsRoute = AuthenticatedPaymentsRouteImport.update({
+  id: '/payments',
+  path: '/payments',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedEventsRoute = AuthenticatedEventsRouteImport.update({
@@ -110,6 +120,12 @@ const AuthenticatedSettingsIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedSettingsRouteRoute,
   } as any)
+const AuthenticatedPaymentsIndexRoute =
+  AuthenticatedPaymentsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedPaymentsRoute,
+  } as any)
 const AuthenticatedEventsIndexRoute =
   AuthenticatedEventsIndexRouteImport.update({
     id: '/',
@@ -127,6 +143,18 @@ const AuthenticatedSettingsAppearanceRoute =
     id: '/appearance',
     path: '/appearance',
     getParentRoute: () => AuthenticatedSettingsRouteRoute,
+  } as any)
+const AuthenticatedPaymentsMethodsRoute =
+  AuthenticatedPaymentsMethodsRouteImport.update({
+    id: '/methods',
+    path: '/methods',
+    getParentRoute: () => AuthenticatedPaymentsRoute,
+  } as any)
+const AuthenticatedPaymentsConsumersRoute =
+  AuthenticatedPaymentsConsumersRouteImport.update({
+    id: '/consumers',
+    path: '/consumers',
+    getParentRoute: () => AuthenticatedPaymentsRoute,
   } as any)
 const AuthenticatedEventsNewRoute = AuthenticatedEventsNewRouteImport.update({
   id: '/new',
@@ -162,6 +190,12 @@ const AuthenticatedStoreProductsIdRoute =
     path: '/store/products/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPaymentsInvoicesIdRoute =
+  AuthenticatedPaymentsInvoicesIdRouteImport.update({
+    id: '/invoices/$id',
+    path: '/invoices/$id',
+    getParentRoute: () => AuthenticatedPaymentsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
@@ -175,15 +209,20 @@ export interface FileRoutesByFullPath {
   '/503': typeof errors503Route
   '/admin-users': typeof AuthenticatedAdminUsersRoute
   '/events': typeof AuthenticatedEventsRouteWithChildren
+  '/payments': typeof AuthenticatedPaymentsRouteWithChildren
   '/students': typeof AuthenticatedStudentsRouteWithChildren
   '/syahriyah': typeof AuthenticatedSyahriyahRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/events/$id': typeof AuthenticatedEventsIdRoute
   '/events/new': typeof AuthenticatedEventsNewRoute
+  '/payments/consumers': typeof AuthenticatedPaymentsConsumersRoute
+  '/payments/methods': typeof AuthenticatedPaymentsMethodsRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/students/$idSantri': typeof AuthenticatedStudentsIdSantriRoute
   '/events/': typeof AuthenticatedEventsIndexRoute
+  '/payments/': typeof AuthenticatedPaymentsIndexRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
+  '/payments/invoices/$id': typeof AuthenticatedPaymentsInvoicesIdRoute
   '/store/products/$id': typeof AuthenticatedStoreProductsIdRoute
   '/store/products/new': typeof AuthenticatedStoreProductsNewRoute
   '/store/products/': typeof AuthenticatedStoreProductsIndexRoute
@@ -203,10 +242,14 @@ export interface FileRoutesByTo {
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/events/$id': typeof AuthenticatedEventsIdRoute
   '/events/new': typeof AuthenticatedEventsNewRoute
+  '/payments/consumers': typeof AuthenticatedPaymentsConsumersRoute
+  '/payments/methods': typeof AuthenticatedPaymentsMethodsRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/students/$idSantri': typeof AuthenticatedStudentsIdSantriRoute
   '/events': typeof AuthenticatedEventsIndexRoute
+  '/payments': typeof AuthenticatedPaymentsIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
+  '/payments/invoices/$id': typeof AuthenticatedPaymentsInvoicesIdRoute
   '/store/products/$id': typeof AuthenticatedStoreProductsIdRoute
   '/store/products/new': typeof AuthenticatedStoreProductsNewRoute
   '/store/products': typeof AuthenticatedStoreProductsIndexRoute
@@ -224,16 +267,21 @@ export interface FileRoutesById {
   '/(errors)/503': typeof errors503Route
   '/_authenticated/admin-users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/events': typeof AuthenticatedEventsRouteWithChildren
+  '/_authenticated/payments': typeof AuthenticatedPaymentsRouteWithChildren
   '/_authenticated/students': typeof AuthenticatedStudentsRouteWithChildren
   '/_authenticated/syahriyah': typeof AuthenticatedSyahriyahRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/_authenticated/events/$id': typeof AuthenticatedEventsIdRoute
   '/_authenticated/events/new': typeof AuthenticatedEventsNewRoute
+  '/_authenticated/payments/consumers': typeof AuthenticatedPaymentsConsumersRoute
+  '/_authenticated/payments/methods': typeof AuthenticatedPaymentsMethodsRoute
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/_authenticated/students/$idSantri': typeof AuthenticatedStudentsIdSantriRoute
   '/_authenticated/events/': typeof AuthenticatedEventsIndexRoute
+  '/_authenticated/payments/': typeof AuthenticatedPaymentsIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
+  '/_authenticated/payments/invoices/$id': typeof AuthenticatedPaymentsInvoicesIdRoute
   '/_authenticated/store/products/$id': typeof AuthenticatedStoreProductsIdRoute
   '/_authenticated/store/products/new': typeof AuthenticatedStoreProductsNewRoute
   '/_authenticated/store/products/': typeof AuthenticatedStoreProductsIndexRoute
@@ -252,15 +300,20 @@ export interface FileRouteTypes {
     | '/503'
     | '/admin-users'
     | '/events'
+    | '/payments'
     | '/students'
     | '/syahriyah'
     | '/errors/$error'
     | '/events/$id'
     | '/events/new'
+    | '/payments/consumers'
+    | '/payments/methods'
     | '/settings/appearance'
     | '/students/$idSantri'
     | '/events/'
+    | '/payments/'
     | '/settings/'
+    | '/payments/invoices/$id'
     | '/store/products/$id'
     | '/store/products/new'
     | '/store/products/'
@@ -280,10 +333,14 @@ export interface FileRouteTypes {
     | '/errors/$error'
     | '/events/$id'
     | '/events/new'
+    | '/payments/consumers'
+    | '/payments/methods'
     | '/settings/appearance'
     | '/students/$idSantri'
     | '/events'
+    | '/payments'
     | '/settings'
+    | '/payments/invoices/$id'
     | '/store/products/$id'
     | '/store/products/new'
     | '/store/products'
@@ -300,16 +357,21 @@ export interface FileRouteTypes {
     | '/(errors)/503'
     | '/_authenticated/admin-users'
     | '/_authenticated/events'
+    | '/_authenticated/payments'
     | '/_authenticated/students'
     | '/_authenticated/syahriyah'
     | '/_authenticated/'
     | '/_authenticated/errors/$error'
     | '/_authenticated/events/$id'
     | '/_authenticated/events/new'
+    | '/_authenticated/payments/consumers'
+    | '/_authenticated/payments/methods'
     | '/_authenticated/settings/appearance'
     | '/_authenticated/students/$idSantri'
     | '/_authenticated/events/'
+    | '/_authenticated/payments/'
     | '/_authenticated/settings/'
+    | '/_authenticated/payments/invoices/$id'
     | '/_authenticated/store/products/$id'
     | '/_authenticated/store/products/new'
     | '/_authenticated/store/products/'
@@ -354,6 +416,13 @@ declare module '@tanstack/react-router' {
       path: '/students'
       fullPath: '/students'
       preLoaderRoute: typeof AuthenticatedStudentsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/payments': {
+      id: '/_authenticated/payments'
+      path: '/payments'
+      fullPath: '/payments'
+      preLoaderRoute: typeof AuthenticatedPaymentsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/events': {
@@ -433,6 +502,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsIndexRouteImport
       parentRoute: typeof AuthenticatedSettingsRouteRoute
     }
+    '/_authenticated/payments/': {
+      id: '/_authenticated/payments/'
+      path: '/'
+      fullPath: '/payments/'
+      preLoaderRoute: typeof AuthenticatedPaymentsIndexRouteImport
+      parentRoute: typeof AuthenticatedPaymentsRoute
+    }
     '/_authenticated/events/': {
       id: '/_authenticated/events/'
       path: '/'
@@ -453,6 +529,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/settings/appearance'
       preLoaderRoute: typeof AuthenticatedSettingsAppearanceRouteImport
       parentRoute: typeof AuthenticatedSettingsRouteRoute
+    }
+    '/_authenticated/payments/methods': {
+      id: '/_authenticated/payments/methods'
+      path: '/methods'
+      fullPath: '/payments/methods'
+      preLoaderRoute: typeof AuthenticatedPaymentsMethodsRouteImport
+      parentRoute: typeof AuthenticatedPaymentsRoute
+    }
+    '/_authenticated/payments/consumers': {
+      id: '/_authenticated/payments/consumers'
+      path: '/consumers'
+      fullPath: '/payments/consumers'
+      preLoaderRoute: typeof AuthenticatedPaymentsConsumersRouteImport
+      parentRoute: typeof AuthenticatedPaymentsRoute
     }
     '/_authenticated/events/new': {
       id: '/_authenticated/events/new'
@@ -496,6 +586,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedStoreProductsIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/payments/invoices/$id': {
+      id: '/_authenticated/payments/invoices/$id'
+      path: '/invoices/$id'
+      fullPath: '/payments/invoices/$id'
+      preLoaderRoute: typeof AuthenticatedPaymentsInvoicesIdRouteImport
+      parentRoute: typeof AuthenticatedPaymentsRoute
+    }
   }
 }
 
@@ -530,6 +627,25 @@ const AuthenticatedEventsRouteChildren: AuthenticatedEventsRouteChildren = {
 const AuthenticatedEventsRouteWithChildren =
   AuthenticatedEventsRoute._addFileChildren(AuthenticatedEventsRouteChildren)
 
+interface AuthenticatedPaymentsRouteChildren {
+  AuthenticatedPaymentsConsumersRoute: typeof AuthenticatedPaymentsConsumersRoute
+  AuthenticatedPaymentsMethodsRoute: typeof AuthenticatedPaymentsMethodsRoute
+  AuthenticatedPaymentsIndexRoute: typeof AuthenticatedPaymentsIndexRoute
+  AuthenticatedPaymentsInvoicesIdRoute: typeof AuthenticatedPaymentsInvoicesIdRoute
+}
+
+const AuthenticatedPaymentsRouteChildren: AuthenticatedPaymentsRouteChildren = {
+  AuthenticatedPaymentsConsumersRoute: AuthenticatedPaymentsConsumersRoute,
+  AuthenticatedPaymentsMethodsRoute: AuthenticatedPaymentsMethodsRoute,
+  AuthenticatedPaymentsIndexRoute: AuthenticatedPaymentsIndexRoute,
+  AuthenticatedPaymentsInvoicesIdRoute: AuthenticatedPaymentsInvoicesIdRoute,
+}
+
+const AuthenticatedPaymentsRouteWithChildren =
+  AuthenticatedPaymentsRoute._addFileChildren(
+    AuthenticatedPaymentsRouteChildren,
+  )
+
 interface AuthenticatedStudentsRouteChildren {
   AuthenticatedStudentsIdSantriRoute: typeof AuthenticatedStudentsIdSantriRoute
 }
@@ -547,6 +663,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsRouteRoute: typeof AuthenticatedSettingsRouteRouteWithChildren
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedEventsRoute: typeof AuthenticatedEventsRouteWithChildren
+  AuthenticatedPaymentsRoute: typeof AuthenticatedPaymentsRouteWithChildren
   AuthenticatedStudentsRoute: typeof AuthenticatedStudentsRouteWithChildren
   AuthenticatedSyahriyahRoute: typeof AuthenticatedSyahriyahRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
@@ -560,6 +677,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsRouteRoute: AuthenticatedSettingsRouteRouteWithChildren,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedEventsRoute: AuthenticatedEventsRouteWithChildren,
+  AuthenticatedPaymentsRoute: AuthenticatedPaymentsRouteWithChildren,
   AuthenticatedStudentsRoute: AuthenticatedStudentsRouteWithChildren,
   AuthenticatedSyahriyahRoute: AuthenticatedSyahriyahRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
