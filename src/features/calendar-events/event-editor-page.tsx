@@ -187,7 +187,20 @@ function EventForm({
   const [recurrence, setRecurrence] = useState<CalendarRecurrence>(
     initial?.dateRule.recurrence ?? 'ONCE'
   )
-  const [date, setDate] = useState(initial?.dateRule.gregorian?.date ?? '')
+  const initialGregorianDate = initial?.dateRule.gregorian?.date
+  const [date, setDate] = useState(initialGregorianDate ?? '')
+  const [gregorianMonth, setGregorianMonth] = useState(
+    String(
+      initial?.dateRule.gregorian?.month ??
+        initialGregorianDate?.slice(5, 7) ??
+        ''
+    )
+  )
+  const [gregorianDay, setGregorianDay] = useState(
+    String(
+      initial?.dateRule.gregorian?.day ?? initialGregorianDate?.slice(8, 10) ?? ''
+    )
+  )
   const [hijriYear, setHijriYear] = useState(
     String(initial?.dateRule.hijri?.year ?? '')
   )
@@ -229,14 +242,27 @@ function EventForm({
       dateRule: {
         basis,
         recurrence,
-        gregorian: basis === 'GREGORIAN' ? { date } : undefined,
+        gregorian:
+          basis === 'GREGORIAN'
+            ? recurrence === 'YEARLY'
+              ? {
+                  month: Number(gregorianMonth),
+                  day: Number(gregorianDay),
+                }
+              : { date }
+            : undefined,
         hijri:
           basis === 'HIJRI'
-            ? {
-                year: Number(hijriYear),
-                month: Number(hijriMonth),
-                day: Number(hijriDay),
-              }
+            ? recurrence === 'YEARLY'
+              ? {
+                  month: Number(hijriMonth),
+                  day: Number(hijriDay),
+                }
+              : {
+                  year: Number(hijriYear),
+                  month: Number(hijriMonth),
+                  day: Number(hijriDay),
+                }
             : undefined,
         range,
       },
@@ -358,22 +384,53 @@ function EventForm({
               />
             </div>
             {basis === 'GREGORIAN' ? (
-              <Field
-                label='Tanggal Gregorian'
-                id='event-date'
-                type='date'
-                value={date}
-                onChange={setDate}
-              />
-            ) : (
-              <div className='grid gap-4 sm:grid-cols-3'>
+              recurrence === 'YEARLY' ? (
+                <div className='grid gap-4 sm:grid-cols-2'>
+                  <Field
+                    label='Bulan Gregorian'
+                    id='event-gregorian-month'
+                    type='number'
+                    min='1'
+                    max='12'
+                    value={gregorianMonth}
+                    onChange={setGregorianMonth}
+                  />
+                  <Field
+                    label='Hari Gregorian'
+                    id='event-gregorian-day'
+                    type='number'
+                    min='1'
+                    max='31'
+                    value={gregorianDay}
+                    onChange={setGregorianDay}
+                  />
+                </div>
+              ) : (
                 <Field
-                  label='Tahun Hijri'
-                  id='event-hijri-year'
-                  type='number'
-                  value={hijriYear}
-                  onChange={setHijriYear}
+                  label='Tanggal Gregorian'
+                  id='event-date'
+                  type='date'
+                  value={date}
+                  onChange={setDate}
                 />
+              )
+            ) : (
+              <div
+                className={
+                  recurrence === 'YEARLY'
+                    ? 'grid gap-4 sm:grid-cols-2'
+                    : 'grid gap-4 sm:grid-cols-3'
+                }
+              >
+                {recurrence === 'ONCE' && (
+                  <Field
+                    label='Tahun Hijri'
+                    id='event-hijri-year'
+                    type='number'
+                    value={hijriYear}
+                    onChange={setHijriYear}
+                  />
+                )}
                 <Field
                   label='Bulan Hijri'
                   id='event-hijri-month'

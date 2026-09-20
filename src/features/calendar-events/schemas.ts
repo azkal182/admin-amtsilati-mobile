@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import * as z from 'zod'
 
 const categoryCodes = [
   'ISLAMIC',
@@ -46,23 +46,46 @@ const dateRuleSchema = z
         path: ['range'],
       })
     }
-    if (
-      value.basis === 'GREGORIAN' &&
-      !value.gregorian?.date &&
-      (!value.gregorian?.month || !value.gregorian?.day)
-    ) {
-      context.addIssue({
-        code: 'custom',
-        message: 'Isi tanggal Gregorian.',
-        path: ['gregorian'],
-      })
+    if (value.basis === 'GREGORIAN') {
+      const hasMonthAndDay =
+        value.gregorian?.month != null && value.gregorian?.day != null
+
+      if (value.recurrence === 'YEARLY' && !hasMonthAndDay) {
+        context.addIssue({
+          code: 'custom',
+          message: 'Isi bulan dan hari Gregorian untuk event tahunan.',
+          path: ['gregorian'],
+        })
+      }
+
+      if (value.recurrence === 'ONCE' && !value.gregorian?.date) {
+        context.addIssue({
+          code: 'custom',
+          message: 'Isi tanggal Gregorian.',
+          path: ['gregorian'],
+        })
+      }
     }
-    if (value.basis === 'HIJRI' && (!value.hijri?.month || !value.hijri?.day)) {
-      context.addIssue({
-        code: 'custom',
-        message: 'Isi tanggal Hijri.',
-        path: ['hijri'],
-      })
+
+    if (value.basis === 'HIJRI') {
+      const hasMonthAndDay =
+        value.hijri?.month != null && value.hijri?.day != null
+
+      if (!hasMonthAndDay) {
+        context.addIssue({
+          code: 'custom',
+          message: 'Isi bulan dan hari Hijri.',
+          path: ['hijri'],
+        })
+      }
+
+      if (value.recurrence === 'ONCE' && value.hijri?.year == null) {
+        context.addIssue({
+          code: 'custom',
+          message: 'Isi tahun Hijri untuk event sekali.',
+          path: ['hijri', 'year'],
+        })
+      }
     }
   })
 
