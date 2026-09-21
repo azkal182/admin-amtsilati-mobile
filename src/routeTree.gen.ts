@@ -14,6 +14,7 @@ import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedSyahriyahRouteImport } from './routes/_authenticated/syahriyah'
 import { Route as AuthenticatedStudentsRouteImport } from './routes/_authenticated/students'
 import { Route as AuthenticatedPaymentsRouteImport } from './routes/_authenticated/payments'
+import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedEventsRouteImport } from './routes/_authenticated/events'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin-users'
 import { Route as errors503RouteImport } from './routes/(errors)/503'
@@ -63,6 +64,12 @@ const AuthenticatedPaymentsRoute = AuthenticatedPaymentsRouteImport.update({
   path: '/payments',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedNotificationsRoute =
+  AuthenticatedNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedEventsRoute = AuthenticatedEventsRouteImport.update({
   id: '/events',
   path: '/events',
@@ -209,6 +216,7 @@ export interface FileRoutesByFullPath {
   '/503': typeof errors503Route
   '/admin-users': typeof AuthenticatedAdminUsersRoute
   '/events': typeof AuthenticatedEventsRouteWithChildren
+  '/notifications': typeof AuthenticatedNotificationsRoute
   '/payments': typeof AuthenticatedPaymentsRouteWithChildren
   '/students': typeof AuthenticatedStudentsRouteWithChildren
   '/syahriyah': typeof AuthenticatedSyahriyahRoute
@@ -236,6 +244,7 @@ export interface FileRoutesByTo {
   '/500': typeof errors500Route
   '/503': typeof errors503Route
   '/admin-users': typeof AuthenticatedAdminUsersRoute
+  '/notifications': typeof AuthenticatedNotificationsRoute
   '/students': typeof AuthenticatedStudentsRouteWithChildren
   '/syahriyah': typeof AuthenticatedSyahriyahRoute
   '/': typeof AuthenticatedIndexRoute
@@ -267,6 +276,7 @@ export interface FileRoutesById {
   '/(errors)/503': typeof errors503Route
   '/_authenticated/admin-users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/events': typeof AuthenticatedEventsRouteWithChildren
+  '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/payments': typeof AuthenticatedPaymentsRouteWithChildren
   '/_authenticated/students': typeof AuthenticatedStudentsRouteWithChildren
   '/_authenticated/syahriyah': typeof AuthenticatedSyahriyahRoute
@@ -300,6 +310,7 @@ export interface FileRouteTypes {
     | '/503'
     | '/admin-users'
     | '/events'
+    | '/notifications'
     | '/payments'
     | '/students'
     | '/syahriyah'
@@ -327,6 +338,7 @@ export interface FileRouteTypes {
     | '/500'
     | '/503'
     | '/admin-users'
+    | '/notifications'
     | '/students'
     | '/syahriyah'
     | '/'
@@ -357,6 +369,7 @@ export interface FileRouteTypes {
     | '/(errors)/503'
     | '/_authenticated/admin-users'
     | '/_authenticated/events'
+    | '/_authenticated/notifications'
     | '/_authenticated/payments'
     | '/_authenticated/students'
     | '/_authenticated/syahriyah'
@@ -423,6 +436,13 @@ declare module '@tanstack/react-router' {
       path: '/payments'
       fullPath: '/payments'
       preLoaderRoute: typeof AuthenticatedPaymentsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/notifications': {
+      id: '/_authenticated/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof AuthenticatedNotificationsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/events': {
@@ -663,6 +683,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsRouteRoute: typeof AuthenticatedSettingsRouteRouteWithChildren
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedEventsRoute: typeof AuthenticatedEventsRouteWithChildren
+  AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedPaymentsRoute: typeof AuthenticatedPaymentsRouteWithChildren
   AuthenticatedStudentsRoute: typeof AuthenticatedStudentsRouteWithChildren
   AuthenticatedSyahriyahRoute: typeof AuthenticatedSyahriyahRoute
@@ -677,6 +698,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsRouteRoute: AuthenticatedSettingsRouteRouteWithChildren,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedEventsRoute: AuthenticatedEventsRouteWithChildren,
+  AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedPaymentsRoute: AuthenticatedPaymentsRouteWithChildren,
   AuthenticatedStudentsRoute: AuthenticatedStudentsRouteWithChildren,
   AuthenticatedSyahriyahRoute: AuthenticatedSyahriyahRoute,
