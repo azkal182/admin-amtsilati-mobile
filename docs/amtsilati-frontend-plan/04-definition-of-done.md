@@ -29,6 +29,7 @@ Sebuah halaman dianggap selesai jika:
 | Store | `/internal/admin/store/*` | `store.manage` |
 | Events | `/internal/admin/events*` | `events.manage`, publish memakai `events.publish` |
 | Payments | `/internal/admin/payments/*` | `payments.read`, `payments.manage`, `payments.reconcile`, `payments.webhook.retry` |
+| App config | `/internal/admin/app-config` | `app_config.manage` |
 | Dashboard | `/health` dan query modul tersedia | sesuai modul |
 
 ## Contract change policy

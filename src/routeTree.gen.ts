@@ -30,6 +30,7 @@ import { Route as AuthenticatedPaymentsIndexRouteImport } from './routes/_authen
 import { Route as AuthenticatedEventsIndexRouteImport } from './routes/_authenticated/events/index'
 import { Route as AuthenticatedStudentsIdSantriRouteImport } from './routes/_authenticated/students/$idSantri'
 import { Route as AuthenticatedSettingsAppearanceRouteImport } from './routes/_authenticated/settings/appearance'
+import { Route as AuthenticatedSettingsAppConfigRouteImport } from './routes/_authenticated/settings/app-config'
 import { Route as AuthenticatedPaymentsMethodsRouteImport } from './routes/_authenticated/payments/methods'
 import { Route as AuthenticatedPaymentsConsumersRouteImport } from './routes/_authenticated/payments/consumers'
 import { Route as AuthenticatedEventsNewRouteImport } from './routes/_authenticated/events/new'
@@ -151,6 +152,12 @@ const AuthenticatedSettingsAppearanceRoute =
     path: '/appearance',
     getParentRoute: () => AuthenticatedSettingsRouteRoute,
   } as any)
+const AuthenticatedSettingsAppConfigRoute =
+  AuthenticatedSettingsAppConfigRouteImport.update({
+    id: '/app-config',
+    path: '/app-config',
+    getParentRoute: () => AuthenticatedSettingsRouteRoute,
+  } as any)
 const AuthenticatedPaymentsMethodsRoute =
   AuthenticatedPaymentsMethodsRouteImport.update({
     id: '/methods',
@@ -225,6 +232,7 @@ export interface FileRoutesByFullPath {
   '/events/new': typeof AuthenticatedEventsNewRoute
   '/payments/consumers': typeof AuthenticatedPaymentsConsumersRoute
   '/payments/methods': typeof AuthenticatedPaymentsMethodsRoute
+  '/settings/app-config': typeof AuthenticatedSettingsAppConfigRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/students/$idSantri': typeof AuthenticatedStudentsIdSantriRoute
   '/events/': typeof AuthenticatedEventsIndexRoute
@@ -253,6 +261,7 @@ export interface FileRoutesByTo {
   '/events/new': typeof AuthenticatedEventsNewRoute
   '/payments/consumers': typeof AuthenticatedPaymentsConsumersRoute
   '/payments/methods': typeof AuthenticatedPaymentsMethodsRoute
+  '/settings/app-config': typeof AuthenticatedSettingsAppConfigRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/students/$idSantri': typeof AuthenticatedStudentsIdSantriRoute
   '/events': typeof AuthenticatedEventsIndexRoute
@@ -286,6 +295,7 @@ export interface FileRoutesById {
   '/_authenticated/events/new': typeof AuthenticatedEventsNewRoute
   '/_authenticated/payments/consumers': typeof AuthenticatedPaymentsConsumersRoute
   '/_authenticated/payments/methods': typeof AuthenticatedPaymentsMethodsRoute
+  '/_authenticated/settings/app-config': typeof AuthenticatedSettingsAppConfigRoute
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/_authenticated/students/$idSantri': typeof AuthenticatedStudentsIdSantriRoute
   '/_authenticated/events/': typeof AuthenticatedEventsIndexRoute
@@ -319,6 +329,7 @@ export interface FileRouteTypes {
     | '/events/new'
     | '/payments/consumers'
     | '/payments/methods'
+    | '/settings/app-config'
     | '/settings/appearance'
     | '/students/$idSantri'
     | '/events/'
@@ -347,6 +358,7 @@ export interface FileRouteTypes {
     | '/events/new'
     | '/payments/consumers'
     | '/payments/methods'
+    | '/settings/app-config'
     | '/settings/appearance'
     | '/students/$idSantri'
     | '/events'
@@ -379,6 +391,7 @@ export interface FileRouteTypes {
     | '/_authenticated/events/new'
     | '/_authenticated/payments/consumers'
     | '/_authenticated/payments/methods'
+    | '/_authenticated/settings/app-config'
     | '/_authenticated/settings/appearance'
     | '/_authenticated/students/$idSantri'
     | '/_authenticated/events/'
@@ -550,6 +563,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsAppearanceRouteImport
       parentRoute: typeof AuthenticatedSettingsRouteRoute
     }
+    '/_authenticated/settings/app-config': {
+      id: '/_authenticated/settings/app-config'
+      path: '/app-config'
+      fullPath: '/settings/app-config'
+      preLoaderRoute: typeof AuthenticatedSettingsAppConfigRouteImport
+      parentRoute: typeof AuthenticatedSettingsRouteRoute
+    }
     '/_authenticated/payments/methods': {
       id: '/_authenticated/payments/methods'
       path: '/methods'
@@ -617,12 +637,14 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedSettingsRouteRouteChildren {
+  AuthenticatedSettingsAppConfigRoute: typeof AuthenticatedSettingsAppConfigRoute
   AuthenticatedSettingsAppearanceRoute: typeof AuthenticatedSettingsAppearanceRoute
   AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute
 }
 
 const AuthenticatedSettingsRouteRouteChildren: AuthenticatedSettingsRouteRouteChildren =
   {
+    AuthenticatedSettingsAppConfigRoute: AuthenticatedSettingsAppConfigRoute,
     AuthenticatedSettingsAppearanceRoute: AuthenticatedSettingsAppearanceRoute,
     AuthenticatedSettingsIndexRoute: AuthenticatedSettingsIndexRoute,
   }

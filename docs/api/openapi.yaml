@@ -146,6 +146,55 @@ paths:
                 $ref: '#/components/schemas/LogoutResponse'
         '500':
           $ref: '#/components/responses/InternalError'
+  /internal/admin/app-config:
+    get:
+      tags:
+        - Internal Admin
+      summary: Get application configuration
+      description: Requires the app_config.manage permission.
+      security:
+        - bearerAdminAuth: []
+      responses:
+        '200':
+          description: Application configuration retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminAppConfigResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    put:
+      tags:
+        - Internal Admin
+      summary: Replace application configuration
+      description: >-
+        Requires the app_config.manage permission. Both WhatsApp numbers must be
+        sent on every request; omitted fields are cleared. A number is empty or
+        digits only with country code, without a plus sign or punctuation.
+        Changes are recorded in the backoffice audit log.
+      security:
+        - bearerAdminAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminAppConfigInput'
+      responses:
+        '200':
+          description: Application configuration saved
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
   /internal/admin/users:
     get:
       tags:
@@ -3214,6 +3263,44 @@ components:
         - userCredentials
         - accessToken
         - refreshToken
+    AdminAppConfig:
+      type: object
+      required:
+        - whatsappAdminNumber
+        - whatsappStoreNumber
+      properties:
+        whatsappAdminNumber:
+          type: string
+          description: Empty or digits only with country code.
+          pattern: '^\\d*$'
+          example: '6281234567890'
+        whatsappStoreNumber:
+          type: string
+          description: Empty or digits only with country code.
+          pattern: '^\\d*$'
+          example: '6289876543210'
+    AdminAppConfigInput:
+      allOf:
+        - $ref: '#/components/schemas/AdminAppConfig'
+    AdminAppConfigResponse:
+      type: object
+      required:
+        - success
+        - message
+        - data
+        - meta
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+          example: App config retrieved
+        data:
+          $ref: '#/components/schemas/AdminAppConfig'
+        meta:
+          type: object
+          additionalProperties: true
     AdminLoginResponseData:
       type: object
       properties:
