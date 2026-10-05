@@ -198,7 +198,9 @@ function EventForm({
   )
   const [gregorianDay, setGregorianDay] = useState(
     String(
-      initial?.dateRule.gregorian?.day ?? initialGregorianDate?.slice(8, 10) ?? ''
+      initial?.dateRule.gregorian?.day ??
+        initialGregorianDate?.slice(8, 10) ??
+        ''
     )
   )
   const [hijriYear, setHijriYear] = useState(

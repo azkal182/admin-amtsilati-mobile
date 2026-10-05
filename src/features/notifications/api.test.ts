@@ -51,13 +51,11 @@ describe('notification API', () => {
   })
 
   it('sends an admin notification payload without producer credentials', async () => {
-    const post = vi
-      .spyOn(adminApi, 'post')
-      .mockResolvedValue({
-        success: true,
-        data: { eventId: 'evt-1' },
-        meta: {},
-      })
+    const post = vi.spyOn(adminApi, 'post').mockResolvedValue({
+      success: true,
+      data: { eventId: 'evt-1' },
+      meta: {},
+    })
     await notificationApi.send({
       schemaVersion: 1,
       eventId: 'evt-1',
