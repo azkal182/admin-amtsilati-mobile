@@ -30,6 +30,7 @@ src/
     syahriyah/
     store/
     calendar-events/
+    contact-directory/
   components/
     ui/
     data-table/
@@ -90,6 +91,7 @@ Feature sederhana boleh menggabungkan file, tetapi tidak boleh memindahkan kode 
 /events
 /events/new
 /events/$id
+/contact-directory
 /settings
 ```
 

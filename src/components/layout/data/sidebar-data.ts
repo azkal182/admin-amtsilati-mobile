@@ -4,6 +4,7 @@ import {
   CalendarDays,
   CreditCard,
   Bell,
+  ContactRound,
   LayoutDashboard,
   Palette,
   Settings,
@@ -28,6 +29,11 @@ export const sidebarData: SidebarData = {
         { title: 'Calendar Events', url: '/events', icon: CalendarDays },
         { title: 'Payments', url: '/payments', icon: CreditCard },
         { title: 'Notification Operations', url: '/notifications', icon: Bell },
+        {
+          title: 'Direktori Kontak',
+          url: '/contact-directory',
+          icon: ContactRound,
+        },
       ],
     },
     {

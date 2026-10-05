@@ -30,6 +30,7 @@ Sebuah halaman dianggap selesai jika:
 | Events | `/internal/admin/events*` | `events.manage`, publish memakai `events.publish` |
 | Payments | `/internal/admin/payments/*` | `payments.read`, `payments.manage`, `payments.reconcile`, `payments.webhook.retry` |
 | App config | `/internal/admin/app-config` | `app_config.manage` |
+| Contact Directory | `/internal/admin/contact-directory*` | `contact_directory.read`, `contact_directory.manage` |
 | Dashboard | `/health` dan query modul tersedia | sesuai modul |
 
 ## Contract change policy

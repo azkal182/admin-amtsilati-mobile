@@ -16,6 +16,7 @@ import { Route as AuthenticatedStudentsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedPaymentsRouteImport } from './routes/_authenticated/payments'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedEventsRouteImport } from './routes/_authenticated/events'
+import { Route as AuthenticatedContactDirectoryRouteImport } from './routes/_authenticated/contact-directory'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin-users'
 import { Route as errors503RouteImport } from './routes/(errors)/503'
 import { Route as errors500RouteImport } from './routes/(errors)/500'
@@ -76,6 +77,12 @@ const AuthenticatedEventsRoute = AuthenticatedEventsRouteImport.update({
   path: '/events',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedContactDirectoryRoute =
+  AuthenticatedContactDirectoryRouteImport.update({
+    id: '/contact-directory',
+    path: '/contact-directory',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
   id: '/admin-users',
   path: '/admin-users',
@@ -222,6 +229,7 @@ export interface FileRoutesByFullPath {
   '/500': typeof errors500Route
   '/503': typeof errors503Route
   '/admin-users': typeof AuthenticatedAdminUsersRoute
+  '/contact-directory': typeof AuthenticatedContactDirectoryRoute
   '/events': typeof AuthenticatedEventsRouteWithChildren
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/payments': typeof AuthenticatedPaymentsRouteWithChildren
@@ -252,6 +260,7 @@ export interface FileRoutesByTo {
   '/500': typeof errors500Route
   '/503': typeof errors503Route
   '/admin-users': typeof AuthenticatedAdminUsersRoute
+  '/contact-directory': typeof AuthenticatedContactDirectoryRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/students': typeof AuthenticatedStudentsRouteWithChildren
   '/syahriyah': typeof AuthenticatedSyahriyahRoute
@@ -284,6 +293,7 @@ export interface FileRoutesById {
   '/(errors)/500': typeof errors500Route
   '/(errors)/503': typeof errors503Route
   '/_authenticated/admin-users': typeof AuthenticatedAdminUsersRoute
+  '/_authenticated/contact-directory': typeof AuthenticatedContactDirectoryRoute
   '/_authenticated/events': typeof AuthenticatedEventsRouteWithChildren
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/payments': typeof AuthenticatedPaymentsRouteWithChildren
@@ -319,6 +329,7 @@ export interface FileRouteTypes {
     | '/500'
     | '/503'
     | '/admin-users'
+    | '/contact-directory'
     | '/events'
     | '/notifications'
     | '/payments'
@@ -349,6 +360,7 @@ export interface FileRouteTypes {
     | '/500'
     | '/503'
     | '/admin-users'
+    | '/contact-directory'
     | '/notifications'
     | '/students'
     | '/syahriyah'
@@ -380,6 +392,7 @@ export interface FileRouteTypes {
     | '/(errors)/500'
     | '/(errors)/503'
     | '/_authenticated/admin-users'
+    | '/_authenticated/contact-directory'
     | '/_authenticated/events'
     | '/_authenticated/notifications'
     | '/_authenticated/payments'
@@ -463,6 +476,13 @@ declare module '@tanstack/react-router' {
       path: '/events'
       fullPath: '/events'
       preLoaderRoute: typeof AuthenticatedEventsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/contact-directory': {
+      id: '/_authenticated/contact-directory'
+      path: '/contact-directory'
+      fullPath: '/contact-directory'
+      preLoaderRoute: typeof AuthenticatedContactDirectoryRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin-users': {
@@ -704,6 +724,7 @@ const AuthenticatedStudentsRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsRouteRoute: typeof AuthenticatedSettingsRouteRouteWithChildren
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
+  AuthenticatedContactDirectoryRoute: typeof AuthenticatedContactDirectoryRoute
   AuthenticatedEventsRoute: typeof AuthenticatedEventsRouteWithChildren
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedPaymentsRoute: typeof AuthenticatedPaymentsRouteWithChildren
@@ -719,6 +740,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsRouteRoute: AuthenticatedSettingsRouteRouteWithChildren,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
+  AuthenticatedContactDirectoryRoute: AuthenticatedContactDirectoryRoute,
   AuthenticatedEventsRoute: AuthenticatedEventsRouteWithChildren,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedPaymentsRoute: AuthenticatedPaymentsRouteWithChildren,

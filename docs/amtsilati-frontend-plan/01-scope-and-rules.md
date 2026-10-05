@@ -13,6 +13,7 @@ Frontend ini adalah panel backoffice untuk operator/staff Amtsilati. Modul aktif
 7. Auth, session expired, forbidden, error state, dan settings dasar.
 8. Payments: monitoring invoice, delivery, Direct Payment methods, dan webhook consumers.
 9. App config: pengelolaan nomor WhatsApp Admin dan Store untuk aplikasi mobile.
+10. Contact Directory: daftar nomor WhatsApp humas asrama dan layanan umum pesantren.
 
 Domain content dan calendar adjustment belum dibuat karena belum memiliki kontrak endpoint aktif.
 
@@ -28,6 +29,7 @@ Domain content dan calendar adjustment belum dibuat karena belum memiliki kontra
 - `/api/v1/internal/admin/events*`
 - `/api/v1/internal/admin/payments/*`
 - `/api/v1/internal/admin/app-config`
+- `/api/v1/internal/admin/contact-directory*`
 - `/api/v1/health`
 
 ### Tidak boleh digunakan untuk panel admin
