@@ -56,6 +56,11 @@ import { ThemeSwitch } from '@/components/theme-switch'
 import { adminAccessApi } from '@/features/admin-users/api'
 import { listStudents } from '@/features/students/api'
 import { notificationApi } from './api'
+import {
+  isNotificationEventType,
+  notificationEventTypes,
+  type NotificationEventType,
+} from './event-types'
 import { notificationQueryKeys } from './query-keys'
 import type { NotificationDelivery, NotificationEvent } from './types'
 
@@ -198,7 +203,8 @@ export function NotificationsPage() {
 function SendTab() {
   const [category, setCategory] = useState<'general' | 'user'>('general')
   const [eventId, setEventId] = useState(createEventId)
-  const [eventType, setEventType] = useState('announcement.test')
+  const [eventType, setEventType] =
+    useState<NotificationEventType>('announcement.test')
   const [title, setTitle] = useState('Test notification')
   const [body, setBody] = useState('Pengujian dari admin panel')
   const [resourceId, setResourceId] = useState('')
@@ -221,14 +227,14 @@ function SendTab() {
         (category === 'user' && !studentId)
       )
         throw new Error(
-          'Lengkapi kategori, student, event type, title, dan body.'
+          'Lengkapi event type, title, dan body, lalu pilih student untuk kategori User.'
         )
       return notificationApi.send({
         schemaVersion: 1,
         eventId: eventId.trim(),
         category,
         ...(category === 'user' ? { idSantri: studentId } : {}),
-        eventType: eventType.trim(),
+        eventType,
         content: { title: title.trim(), body: body.trim() },
         metadata: {
           ...(resourceId.trim() ? { resourceId: resourceId.trim() } : {}),
@@ -307,12 +313,23 @@ function SendTab() {
         </div>
         <div>
           <Label htmlFor='notification-send-type'>Event type</Label>
-          <Input
-            id='notification-send-type'
+          <Select
             value={eventType}
-            onChange={(event) => setEventType(event.target.value)}
-            placeholder='announcement.test'
-          />
+            onValueChange={(value) => {
+              if (isNotificationEventType(value)) setEventType(value)
+            }}
+          >
+            <SelectTrigger id='notification-send-type'>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {notificationEventTypes.map((value) => (
+                <SelectItem key={value} value={value}>
+                  {value}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         {category === 'user' && (
           <div>

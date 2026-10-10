@@ -1,3 +1,5 @@
+import type { NotificationEventType } from './event-types'
+
 export type NotificationSummary = {
   fanoutPending: number
   deliveryPending: number
@@ -73,7 +75,7 @@ export type NotificationSendInput = {
   eventId: string
   category: 'general' | 'user'
   idSantri?: string
-  eventType: string
+  eventType: NotificationEventType
   content: { title: string; body: string }
   metadata: { resourceId?: string; target?: { screen: string } }
 }
